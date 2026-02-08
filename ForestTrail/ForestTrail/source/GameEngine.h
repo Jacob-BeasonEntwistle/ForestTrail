@@ -8,7 +8,6 @@ namespace GE {
 	class GameEngine {
 	public:
 		GameEngine();	// Constructor
-
 		virtual ~GameEngine();	// Deconstructor
 
 		bool init();			// Object initialisation

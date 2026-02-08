@@ -5,7 +5,6 @@ namespace GE {
 	GameEngine::GameEngine() {
 
 	}
-
 	GameEngine::~GameEngine() {
 
 	}
@@ -93,15 +92,15 @@ namespace GE {
 		glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Drawing a 2D triangle
-		glBegin(GL_TRIANGLES);
-			glColor3f(1.0f, 0.5f, 0.5f);
-			glVertex2f(-1.0f, 0.0f);
-			glColor3f(1.0f, 0.5f, 0.5f);
-			glVertex2f(1.0f, 0.0f);
-			glColor3f(1.0f, 0.5f, 0.5f);
-			glVertex2f(0.0f, 1.0f);
-		glEnd();
+		//// Drawing a 2D triangle
+		//glBegin(GL_TRIANGLES);
+		//	glColor3f(1.0f, 0.5f, 0.5f);
+		//	glVertex2f(-1.0f, 0.0f);
+		//	glColor3f(1.0f, 0.5f, 0.5f);
+		//	glVertex2f(1.0f, 0.0f);
+		//	glColor3f(1.0f, 0.5f, 0.5f);
+		//	glVertex2f(0.0f, 1.0f);
+		//glEnd();
 
 		SDL_GL_SwapWindow(window);
 	}

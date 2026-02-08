@@ -134,10 +134,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\GameEngine.h" />
+    <ClInclude Include="source\TriangleRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameEngine.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\TriangleRenderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
