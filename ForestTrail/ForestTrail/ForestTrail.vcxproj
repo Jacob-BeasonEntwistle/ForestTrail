@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)exernals\glew\lib\Release\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\Release\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(IncludePath)</IncludePath>
