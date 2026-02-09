@@ -5,7 +5,10 @@ namespace GE {
 	GLfloat vertexData[] = {
 		-1.0f, 0.0f,
 		1.0f, 0.0f,
-		0.0f, 1.0f
+		0.0f, 1.0f,
+		-1.0f, 0.0f,
+		0.0f, -1.0f,
+		1.0f, 0.0f
 	};
 
 	TriangleRenderer::TriangleRenderer() {
@@ -45,7 +48,7 @@ namespace GE {
 
 		const GLchar* V_ShaderCode[] = {
 			"#version 410\n"
-			"in vec3 vertexPos2D\n"
+			"in vec3 vertexPos2D;\n"
 			"void main() {\n"
 			"gl_Position = vec4(vertexPos2D.x, vertexPos2D.y, 0, 1);\n"
 			"}\n"
@@ -158,7 +161,7 @@ namespace GE {
 		glVertexAttribPointer(vertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
 
 		// Draw the triangle
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// Unselect the attribute from the context
 		glDisableVertexAttribArray(vertexPos2DLocation);

@@ -18,10 +18,10 @@ namespace GE {
 		}
 
 		// Set the OpenGL version for the program
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 		// Set the type of profile which is core meaning modern OpenGL
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
 		// Create the window and frame features
 		// (this has a fixed size and prepares window for OpenGL to render into)
@@ -63,6 +63,12 @@ namespace GE {
 			return false;
 		}
 
+		// Create the TriangleRenderer object
+		triangle = new TriangleRenderer();
+
+		// Initialise the object
+		triangle->init();
+
 		return true;
 	}
 
@@ -84,7 +90,7 @@ namespace GE {
 
 	// Update method which updates the game logic
 	void GameEngine::update() {
-
+		
 	}
 
 	// Draw method that renders the scene
@@ -92,21 +98,21 @@ namespace GE {
 		glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//// Drawing a 2D triangle
-		//glBegin(GL_TRIANGLES);
-		//	glColor3f(1.0f, 0.5f, 0.5f);
-		//	glVertex2f(-1.0f, 0.0f);
-		//	glColor3f(1.0f, 0.5f, 0.5f);
-		//	glVertex2f(1.0f, 0.0f);
-		//	glColor3f(1.0f, 0.5f, 0.5f);
-		//	glVertex2f(0.0f, 1.0f);
-		//glEnd();
+		// Render the triangle
+		triangle->draw();
 
 		SDL_GL_SwapWindow(window);
 	}
 
 	// Shutdown method closes OpenGL and SDL as well as destroying objects
 	void GameEngine::shutdown() {
+		// Get the triangle object to release it's resources
+		if (triangle != nullptr) {
+			triangle->destroy();
+
+			delete triangle;
+		}
+
 		SDL_DestroyWindow(window);
 
 		window = nullptr;
