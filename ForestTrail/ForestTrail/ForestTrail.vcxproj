@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(ProjDir)externals\glm;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\Release\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\GameEngine.h" />
     <ClInclude Include="source\TriangleRenderer.h" />
   </ItemGroup>

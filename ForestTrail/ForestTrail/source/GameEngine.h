@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include "Camera.h"
 #include "TriangleRenderer.h"
 
 namespace GE {
@@ -23,6 +24,9 @@ namespace GE {
 		SDL_Window* window;
 
 		SDL_GLContext glContext;
+
+		// Camera
+		Camera* cam;
 
 		// TriangleRenderer object variable
 		TriangleRenderer* triangle;

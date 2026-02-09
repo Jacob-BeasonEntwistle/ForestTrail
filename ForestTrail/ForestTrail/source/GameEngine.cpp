@@ -63,11 +63,21 @@ namespace GE {
 			return false;
 		}
 
+		// Create camera object
+		cam = new Camera(glm::vec3(0.0f, 1.0f, 5.0f),	// Position
+			glm::vec3(0.0f, 0.0f, 0.0f),	// Look at
+			glm::vec3(0.0f, 1.0f, 0.0f),	// Up direction
+			45.0f, 640.0f / 480.0f, 0.1f, 100.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
+
 		// Create the TriangleRenderer object
 		triangle = new TriangleRenderer();
 
 		// Initialise the object
 		triangle->init();
+		
+		triangle->setPos(0.0f, 0.0f, 0.0f);
+		triangle->setRotation(0.0f, 45.0f, 0.0f);
+		triangle->setScale(20.0f, 20.0f, 20.0f);
 
 		return true;
 	}
@@ -90,7 +100,7 @@ namespace GE {
 
 	// Update method which updates the game logic
 	void GameEngine::update() {
-		
+		// cam->setPosY(cam->getPosY() + 0.5f); // Testing moving the camera in update method
 	}
 
 	// Draw method that renders the scene
@@ -99,7 +109,7 @@ namespace GE {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render the triangle
-		triangle->draw();
+		triangle->draw(cam);
 
 		SDL_GL_SwapWindow(window);
 	}
