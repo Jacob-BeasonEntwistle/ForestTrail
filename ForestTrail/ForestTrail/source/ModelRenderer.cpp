@@ -1,23 +1,15 @@
-#include "TriangleRenderer.h"
+#include "ModelRenderer.h"
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+#include "Model.h"
 
 namespace GE {
-	GLfloat vertexData[] = {
-		-1.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		-1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, -1.0f,
-		1.0f, 0.0f, 0.0f
-	};
-
-	TriangleRenderer::TriangleRenderer() {
+	ModelRenderer::ModelRenderer() {
 		pos_x = pos_y = pos_z = 0.0f;
 		rot_x = rot_y = rot_z = 0.0f;
 		scale_x = scale_y = scale_z = 1.0f;
 	}
-	TriangleRenderer::~TriangleRenderer() {
+	ModelRenderer::~ModelRenderer() {
 
 	}
 
@@ -25,18 +17,23 @@ namespace GE {
 	extern void displayShaderCompilerError(GLuint shaderId);
 
 	// Creates and compiles the shaders, creates the project and links it and creates the vertex buffer object
-	void TriangleRenderer::init() {
+	void ModelRenderer::init() {
 		// Create the vertex shader first
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 		const GLchar* V_ShaderCode[] = {
 			"#version 410\n"
 			"in vec3 vertexPos3D;\n"
+			"in vec2 vUV;\n"
+			"out vec2 uv;\n"
 			"uniform mat4 transformMat;\n"
 			"uniform mat4 viewMat;\n"
 			"uniform mat4 projMat;\n"
 			"void main() {\n"
-			"gl_Position = projMat * viewMat * transformMat * vec4(vertexPos3D.x, vertexPos3D.y, vertexPos3D.z, 1.0);\n"
+			"vec4 v = vec4(vertexPos3D.xyz, 1);\n"
+			"v = projMat * viewMat * transformMat * v;\n"
+			"gl_Position = v;\n"
+			"uv = vUV;\n"
 			"}\n"
 		};
 
@@ -66,9 +63,11 @@ namespace GE {
 
 		const GLchar* F_ShaderCode[] = {
 			"#version 410\n"
+			"in vec2 uv;\n"
+			"uniform sampler2D sampler;\n"
 			"out vec4 fragmentColour;\n"
 			"void main() {\n"
-			"fragmentColour = vec4(0.396, 0.831, 0.502, 0.5);\n"
+			"fragmentColour = texture(sampler, uv).rgba;\n"
 			"}\n"
 		};
 
@@ -117,29 +116,31 @@ namespace GE {
 			std::cerr << "Problem getting vertexPos3D" << std::endl;
 		}
 
+		// Link to the vUV attribute
+		vertexUVLocation = glGetAttribLocation(programId, "vUV");
+
+		// Check for errors
+		if (vertexUVLocation == -1) {
+			std::cerr << "Problem getting vUV" << std::endl;
+		}
+
 		// Get uniform id in shader so C++ program can send data to it
 		viewUniformId = glGetUniformLocation(programId, "viewMat");
 		projectionUniformId = glGetUniformLocation(programId, "projMat");
 		// Transformation matrix uniform
 		transformUniformId = glGetUniformLocation(programId, "transformMat");
-
-		// Create the vertex buffer object
-		glGenBuffers(1, &vboTriangle);
-		glBindBuffer(GL_ARRAY_BUFFER, vboTriangle);
-
-		// Transfer vertices to graphics memory
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-
-		// Tidy up after setting up buffer
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// Sampler is linked in the same way
+		samplerId = glGetUniformLocation(programId, "sampler");
 	}
 
-	void TriangleRenderer::update() {
+	void ModelRenderer::update() {
 
 	}
 
 	// Draw renders the triangles from the buffer object
-	void TriangleRenderer::draw(Camera* cam) {
+	void ModelRenderer::draw(Camera* cam, Model* model) {
+		glEnable(GL_CULL_FACE);
+
 		// Calculate the transformation matrix for the object
 		glm::mat4 transformationMat = glm::mat4(1.0f);
 
@@ -161,31 +162,47 @@ namespace GE {
 		glUniformMatrix4fv(projectionUniformId, 1, GL_FALSE, glm::value_ptr(projectionMat));
 
 		// Select the vertex buffer object into the context
-		glBindBuffer(GL_ARRAY_BUFFER, vboTriangle);
+		glBindBuffer(GL_ARRAY_BUFFER, model->getVertices());
 
 		// Enable the attribute to be passed vertices from the vertex buffer object
 		glEnableVertexAttribArray(vertexPos3DLocation);
 
 		// Define the structure of a vertex for OpenGL to select values from vertex buffer and store in vertexPos3DLocation attribute
-		glVertexAttribPointer(vertexPos3DLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+		glVertexAttribPointer(vertexPos3DLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, x));
 
-		// Draw the triangle
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		// Enable the attribute to be passed vertices from the vertex buffer object
+		glEnableVertexAttribArray(vertexUVLocation);
+
+		// Define the structure of a vertex for OpenGL to select values from vertex buffer and store in vUV attribute
+		glVertexAttribPointer(vertexUVLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, u));
+
+		// Select the texture
+		glActiveTexture(GL_TEXTURE0);
+		glUniform1i(samplerId, 0);
+		glBindTexture(GL_TEXTURE_2D, tex->getTextureName());
+
+		// Draw the model
+		glDrawArrays(GL_TRIANGLES, 0, model->getNumVertices());
 
 		// Unselect the attribute from the context
 		glDisableVertexAttribArray(vertexPos3DLocation);
+
+		// Unselect the colour attribute from the pipeline
+		glDisableVertexAttribArray(vertexUVLocation);
 
 		// Unselect vertex buffer
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		// Unselect the program from the context
 		glUseProgram(0);
+
+		glDisable(GL_CULL_FACE);
 	}
 
 	// Release objects allocated for program and vertex buffer object
-	void TriangleRenderer::destroy() {
+	void ModelRenderer::destroy() {
 		glDeleteProgram(programId);
 
-		glDeleteBuffers(1, &vboTriangle);
+		glDeleteBuffers(1, &vboModel);
 	}
 }

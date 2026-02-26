@@ -79,6 +79,29 @@ namespace GE {
 		triangle->setRotation(0.0f, 45.0f, 0.0f);
 		triangle->setScale(20.0f, 20.0f, 20.0f);
 
+		// Create blank texture
+		tex = new Texture("./blank_texture.png");
+
+		rock = new Model();
+		rock->loadFromFile("./models/rock.obj");
+
+		sign = new Model();
+		sign->loadFromFile("./models/sign.obj");
+
+		crate = new Model();
+		crate->loadFromFile("./models/crate.obj");
+
+		// Put all of the models in the vector
+		loadedModels.push_back(rock);
+		loadedModels.push_back(sign);
+		loadedModels.push_back(crate);
+
+		// Create the Model renderer object
+		mr = new ModelRenderer();
+
+		mr->init();
+		mr->setTexture(tex);
+
 		return true;
 	}
 
@@ -100,7 +123,18 @@ namespace GE {
 
 	// Update method which updates the game logic
 	void GameEngine::update() {
-		// cam->setPosY(cam->getPosY() + 0.5f); // Testing moving the camera in update method
+		// Testing moving the camera in update method
+		if (cam->getPosY() < 50) {
+			cam->setPosY(cam->getPosY() + 0.5f);
+		}
+		if (cam->getPosZ() > -50) {
+			cam->setPosZ(cam->getPosZ() - 0.5f);
+		}
+		
+		// Do something for each model in the vector
+		/*for (int i = 0; i < loadedModels.size(); i++) {
+
+		}*/
 	}
 
 	// Draw method that renders the scene
@@ -111,6 +145,11 @@ namespace GE {
 		// Render the triangle
 		triangle->draw(cam);
 
+		// Draw each model in the vector of loaded models
+		for (int i = 0; i < loadedModels.size(); i++) {
+			mr->draw(cam, loadedModels[i]);
+		}
+
 		SDL_GL_SwapWindow(window);
 	}
 
@@ -119,8 +158,18 @@ namespace GE {
 		// Get the triangle object to release it's resources
 		if (triangle != nullptr) {
 			triangle->destroy();
-
 			delete triangle;
+		}
+
+		// Delete each model from the vector of models
+		for (int i = 0; i < loadedModels.size(); i++) {
+			delete loadedModels[i];
+		}
+
+		// Delete the model renderer
+		if (mr != nullptr) {
+			mr->destroy();
+			delete mr;
 		}
 
 		SDL_DestroyWindow(window);

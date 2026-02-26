@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(ProjDir)externals\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\Release\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(ProjDir)externals\glm;$(ProjDir)externals\assimp\include;$(ProjDir)externals\SDL2_image\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\x64;$(ProjDir)externals\assimp\lib\x64;$(ProjDir)externals\SDL2_image\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)exernals\glew\lib\Release\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(ProjDir)externals\glm;$(ProjDir)externals\assimp\include;$(ProjDir)externals\SDL2_image\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\x64;$(ProjDir)externals\assimp\lib\x64;$(ProjDir)externals\SDL2_image\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc142-mtd.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,17 +129,25 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc142-mtd.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\GameEngine.h" />
+    <ClInclude Include="source\Model.h" />
+    <ClInclude Include="source\ModelRenderer.h" />
+    <ClInclude Include="source\ShaderUtils.h" />
+    <ClInclude Include="source\Texture.h" />
     <ClInclude Include="source\TriangleRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameEngine.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\Model.cpp" />
+    <ClCompile Include="source\ModelRenderer.cpp" />
+    <ClCompile Include="source\ShaderUtils.cpp" />
+    <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="source\TriangleRenderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
