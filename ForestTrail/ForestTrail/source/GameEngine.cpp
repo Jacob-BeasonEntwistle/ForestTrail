@@ -3,7 +3,16 @@
 
 namespace GE {
 	GameEngine::GameEngine() {
-
+		w = 1080;
+		h = 720;
+		windowflags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+		FOV = 60.0f;
+	}
+	GameEngine::GameEngine(int _w, int _h, float _FOV) {
+		w = _w;
+		h = _h;
+		windowflags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+		FOV = _FOV;
 	}
 	GameEngine::~GameEngine() {
 
@@ -25,7 +34,7 @@ namespace GE {
 
 		// Create the window and frame features
 		// (this has a fixed size and prepares window for OpenGL to render into)
-		window = SDL_CreateWindow("SDL OpenGL", 50, 50, 640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow("SDL OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
 		// Check window was created
 		if (window == nullptr) {
@@ -57,17 +66,25 @@ namespace GE {
 		}
 
 		// Turn on VSync
-		if (SDL_GL_SetSwapInterval(1) != 0) {
-			std::cerr << "Warning: unable to set VSync! Error: " << SDL_GetError() << std::endl;
+		if (vsync) {
+			if (SDL_GL_SetSwapInterval(1) != 0) {
+				std::cerr << "Warning: unable to set VSync! Error: " << SDL_GetError() << std::endl;
 
-			return false;
+				return false;
+			}
 		}
 
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+
+		// Look down Z axis into the screen
+		dist = glm::vec3(0.0f, 0.0f, -100.0f);
+
 		// Create camera object
-		cam = new Camera(glm::vec3(0.0f, 1.0f, 5.0f),	// Position
-			glm::vec3(0.0f, 0.0f, 0.0f),	// Look at
+		cam = new Camera(glm::vec3(0.0f, 10.0f, 5.0f),	// Position
+			glm::vec3(0.0f, 0.0f, 20.0f) + dist,	// Look at
 			glm::vec3(0.0f, 1.0f, 0.0f),	// Up direction
-			45.0f, 640.0f / 480.0f, 0.1f, 100.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
+			FOV, w / h, 0.1f, 100.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
 
 		// Create the TriangleRenderer object
 		triangle = new TriangleRenderer();
@@ -77,10 +94,10 @@ namespace GE {
 		
 		triangle->setPos(0.0f, 0.0f, 0.0f);
 		triangle->setRotation(0.0f, 45.0f, 0.0f);
-		triangle->setScale(20.0f, 20.0f, 20.0f);
+		triangle->setScale(100.0f, 100.0f, 100.0f);
 
-		// Create blank texture
-		tex = new Texture("./blank_texture.png");
+		// Create the texture
+		tex = new Texture("./texture_for_models.png");
 
 		rock = new Model();
 		rock->loadFromFile("./models/rock.obj");
@@ -102,6 +119,9 @@ namespace GE {
 		mr->init();
 		mr->setTexture(tex);
 
+		std::string skyboxPath = "./textures/skybox_textures/skybox";
+		skybox = new SkyboxRenderer(skyboxPath + "_front.png", skyboxPath + "_back.png", skyboxPath + "_right.png", skyboxPath + "_left.png", skyboxPath + "_top.png", skyboxPath + "_bottom.png");
+
 		return true;
 	}
 
@@ -118,19 +138,100 @@ namespace GE {
 			return false;
 		}
 
+		while (SDL_PollEvent(&evt)) {
+			if (evt.type == SDL_KEYDOWN) {
+				switch (evt.key.keysym.scancode) {
+				case SDL_SCANCODE_UP:
+				case SDL_SCANCODE_W:
+					keyStates[UP] = true;
+					break;
+				case SDL_SCANCODE_DOWN:
+				case SDL_SCANCODE_S:
+					keyStates[DOWN] = true;
+					break;
+				case SDL_SCANCODE_LEFT:
+				case SDL_SCANCODE_A:
+					keyStates[LEFT] = true;
+					break;
+				case SDL_SCANCODE_RIGHT:
+				case SDL_SCANCODE_D:
+					keyStates[RIGHT] = true;
+					break;
+				}
+			}
+			if (evt.type == SDL_KEYUP) {
+				switch (evt.key.keysym.scancode) {
+				case SDL_SCANCODE_UP:
+				case SDL_SCANCODE_W:
+					keyStates[UP] = false;
+					break;
+				case SDL_SCANCODE_DOWN:
+				case SDL_SCANCODE_S:
+					keyStates[DOWN] = false;
+					break;
+				case SDL_SCANCODE_LEFT:
+				case SDL_SCANCODE_A:
+					keyStates[LEFT] = false;
+					break;
+				case SDL_SCANCODE_RIGHT:
+				case SDL_SCANCODE_D:
+					keyStates[RIGHT] = false;
+					break;
+				}
+			}
+		}
+
 		return true;
+	}
+
+	void GameEngine::processInput() {
+		float mouseSens = cam->getMouseSens();
+		float camSpeed = cam->getCamSpeed();
+
+		// Get current mouse x and y
+		int mouse_x, mouse_y;
+		SDL_GetMouseState(&mouse_x, &mouse_y);
+		// Calculate the difference between old mouse and new mouse position - note inversion on y as this is flipped
+		int diffx = mouse_x - (w / 2);
+		int diffy = (h / 2) - mouse_y;
+
+		// Update the yaw and pitch based on the mouse differential
+		cam->setYaw(cam->getYaw() + diffx * mouseSens);
+		cam->setPitch(cam->getPitch() + diffy * mouseSens);
+
+		// Set the mouse back to the centre
+		SDL_WarpMouseInWindow(window, w / 2, h / 2);
+
+		// Calculate new camera facing direction from the change to yaw and pitch
+		glm::vec3 direction;
+		direction.x = cos(glm::radians(cam->getYaw())) * cos(glm::radians(cam->getPitch()));
+		direction.y = sin(glm::radians(cam->getPitch()));
+		direction.z = sin(glm::radians(cam->getYaw())) * cos(glm::radians(cam->getPitch()));
+		cam->setTarget(glm::normalize(direction));
+
+		// Handle camera movement based upon the relevant key press
+		if (keyStates[UP]) {
+			cam->setPos(cam->getPos() + cam->getTarget() * camSpeed);
+		}
+		if (keyStates[DOWN]) {
+			cam->setPos(cam->getPos() - cam->getTarget() * camSpeed);
+		}
+		if (keyStates[LEFT]) {
+			// Take away the cross product of the facing and up vector from the camera position - strafe left
+			cam->setPos(cam->getPos() - glm::normalize(glm::cross(cam->getTarget(), cam->getUpDir())) * camSpeed);
+		}
+		if (keyStates[RIGHT]) {
+			// Take away the cross product of the facing and up vector from the camera position - strafe right
+			cam->setPos(cam->getPos() + glm::normalize(glm::cross(cam->getTarget(), cam->getUpDir())) * camSpeed);
+		}
+
+		// Call to update camera view matrices
+		// Projection is also updated in case effects like zoom are used (e.g. right click to aim would shrink the fov slightly)
+		cam->updateCamMatrices();
 	}
 
 	// Update method which updates the game logic
 	void GameEngine::update() {
-		// Testing moving the camera in update method
-		if (cam->getPosY() < 50) {
-			cam->setPosY(cam->getPosY() + 0.5f);
-		}
-		if (cam->getPosZ() > -50) {
-			cam->setPosZ(cam->getPosZ() - 0.5f);
-		}
-		
 		// Do something for each model in the vector
 		/*for (int i = 0; i < loadedModels.size(); i++) {
 
@@ -140,7 +241,10 @@ namespace GE {
 	// Draw method that renders the scene
 	void GameEngine::draw() {
 		glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Render skybox first because it should be drawn behind everything
+		skybox->draw(cam);
 
 		// Render the triangle
 		triangle->draw(cam);
@@ -171,6 +275,8 @@ namespace GE {
 			mr->destroy();
 			delete mr;
 		}
+
+		skybox->destroy();
 
 		SDL_DestroyWindow(window);
 

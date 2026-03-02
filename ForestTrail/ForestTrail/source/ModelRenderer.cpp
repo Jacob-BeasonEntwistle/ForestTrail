@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 #include "Model.h"
+#include "ShaderUtils.h"
 
 namespace GE {
 	ModelRenderer::ModelRenderer() {
@@ -18,9 +19,6 @@ namespace GE {
 
 	// Creates and compiles the shaders, creates the project and links it and creates the vertex buffer object
 	void ModelRenderer::init() {
-		// Create the vertex shader first
-		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
 		const GLchar* V_ShaderCode[] = {
 			"#version 410\n"
 			"in vec3 vertexPos3D;\n"
@@ -37,30 +35,6 @@ namespace GE {
 			"}\n"
 		};
 
-		// Copy the source to OpenGL ready for compilation
-		glShaderSource(vertexShader, 1, V_ShaderCode, NULL);
-
-		// Compile the code
-		glCompileShader(vertexShader);
-
-		// Check for compiler errors
-		GLint isShaderCompiledOK = GL_FALSE;
-
-		// Get the compile status from OpenGL
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isShaderCompiledOK);
-
-		// Has the shader failed to compile?
-		if (isShaderCompiledOK != GL_TRUE) {
-			std::cerr << "Unable to compile vertex shader" << std::endl;
-
-			displayShaderCompilerError(vertexShader);
-
-			return;
-		}
-
-		// Do the same for the fragment shader
-		GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
 		const GLchar* F_ShaderCode[] = {
 			"#version 410\n"
 			"in vec2 uv;\n"
@@ -71,42 +45,8 @@ namespace GE {
 			"}\n"
 		};
 
-		// Transfer the shader code
-		glShaderSource(fragmentShader, 1, F_ShaderCode, NULL);
-
-		// Compile it
-		glCompileShader(fragmentShader);
-
-		// Check for errors
-		isShaderCompiledOK = GL_FALSE;
-
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isShaderCompiledOK);
-
-		if (isShaderCompiledOK != GL_TRUE) {
-			std::cerr << "Unable to compile fragment shader" << std::endl;
-
-			displayShaderCompilerError(fragmentShader);
-
-			return;
-		}
-
-		// Create the program object
-		programId = glCreateProgram();
-
-		// Attach shaders to the program object
-		glAttachShader(programId, vertexShader);
-		glAttachShader(programId, fragmentShader);
-
-		// Link the problem to create an executable program and use it to render the object
-		// Program executable will exist in graphics memory
-		glLinkProgram(programId);
-
-		// Check for linking errors
-		GLint isProgramLinked = GL_FALSE;
-		glGetProgramiv(programId, GL_LINK_STATUS, &isProgramLinked);
-		if (isProgramLinked != GL_TRUE) {
-			std::cerr << "Failed to link program" << std::endl;
-		}
+		// Attaches the vertex shader and fragment shader to the program
+		compileProgram(V_ShaderCode, F_ShaderCode, &programId);
 
 		// Get a link to the vertexPos2D to link vertices when rendering
 		vertexPos3DLocation = glGetAttribLocation(programId, "vertexPos3D");
@@ -174,7 +114,7 @@ namespace GE {
 		glEnableVertexAttribArray(vertexUVLocation);
 
 		// Define the structure of a vertex for OpenGL to select values from vertex buffer and store in vUV attribute
-		glVertexAttribPointer(vertexUVLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, u));
+		glVertexAttribPointer(vertexUVLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, u));
 
 		// Select the texture
 		glActiveTexture(GL_TEXTURE0);

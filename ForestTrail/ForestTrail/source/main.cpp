@@ -26,6 +26,9 @@ int main(int argc, char* argv[]) {
 		// Update game state
 		ge.update();
 
+		// Handle input
+		ge.processInput();
+
 		// Draw
 		ge.draw();
 

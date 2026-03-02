@@ -1,6 +1,7 @@
 #include "TriangleRenderer.h"
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+#include "ShaderUtils.h"
 
 namespace GE {
 	GLfloat vertexData[] = {
@@ -26,9 +27,6 @@ namespace GE {
 
 	// Creates and compiles the shaders, creates the project and links it and creates the vertex buffer object
 	void TriangleRenderer::init() {
-		// Create the vertex shader first
-		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
 		const GLchar* V_ShaderCode[] = {
 			"#version 410\n"
 			"in vec3 vertexPos3D;\n"
@@ -40,74 +38,15 @@ namespace GE {
 			"}\n"
 		};
 
-		// Copy the source to OpenGL ready for compilation
-		glShaderSource(vertexShader, 1, V_ShaderCode, NULL);
-
-		// Compile the code
-		glCompileShader(vertexShader);
-
-		// Check for compiler errors
-		GLint isShaderCompiledOK = GL_FALSE;
-
-		// Get the compile status from OpenGL
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isShaderCompiledOK);
-
-		// Has the shader failed to compile?
-		if (isShaderCompiledOK != GL_TRUE) {
-			std::cerr << "Unable to compile vertex shader" << std::endl;
-
-			displayShaderCompilerError(vertexShader);
-
-			return;
-		}
-
-		// Do the same for the fragment shader
-		GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
 		const GLchar* F_ShaderCode[] = {
 			"#version 410\n"
 			"out vec4 fragmentColour;\n"
 			"void main() {\n"
-			"fragmentColour = vec4(0.396, 0.831, 0.502, 0.5);\n"
+			"fragmentColour = vec4(0, 0.415, 0.305, 0.5);\n"
 			"}\n"
 		};
 
-		// Transfer the shader code
-		glShaderSource(fragmentShader, 1, F_ShaderCode, NULL);
-
-		// Compile it
-		glCompileShader(fragmentShader);
-
-		// Check for errors
-		isShaderCompiledOK = GL_FALSE;
-
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isShaderCompiledOK);
-
-		if (isShaderCompiledOK != GL_TRUE) {
-			std::cerr << "Unable to compile fragment shader" << std::endl;
-
-			displayShaderCompilerError(fragmentShader);
-
-			return;
-		}
-
-		// Create the program object
-		programId = glCreateProgram();
-
-		// Attach shaders to the program object
-		glAttachShader(programId, vertexShader);
-		glAttachShader(programId, fragmentShader);
-
-		// Link the problem to create an executable program and use it to render the object
-		// Program executable will exist in graphics memory
-		glLinkProgram(programId);
-
-		// Check for linking errors
-		GLint isProgramLinked = GL_FALSE;
-		glGetProgramiv(programId, GL_LINK_STATUS, &isProgramLinked);
-		if (isProgramLinked != GL_TRUE) {
-			std::cerr << "Failed to link program" << std::endl;
-		}
+		compileProgram(V_ShaderCode, F_ShaderCode, &programId);
 
 		// Get a link to the vertexPos2D to link vertices when rendering
 		vertexPos3DLocation = glGetAttribLocation(programId, "vertexPos3D");

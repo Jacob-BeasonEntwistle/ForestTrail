@@ -36,6 +36,9 @@
     <ClInclude Include="source\ShaderUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\SkyboxRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameEngine.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\ShaderUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SkyboxRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
