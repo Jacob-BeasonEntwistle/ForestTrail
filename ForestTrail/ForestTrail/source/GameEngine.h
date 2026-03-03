@@ -54,13 +54,10 @@ namespace GE {
 		Model* rock;
 		Model* sign;
 		Model* crate;
+		Model* fence;
+		Model* tree;
 
-		// Model textures
-		Texture* rockTex;
-		Texture* signTex;
-		Texture* crateTex;
-
-		// Blank texture
+		// Texture for all models
 		Texture* tex;
 
 		// Model renderer

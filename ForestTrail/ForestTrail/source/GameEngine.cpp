@@ -97,7 +97,7 @@ namespace GE {
 		triangle->setScale(100.0f, 100.0f, 100.0f);
 
 		// Create the texture
-		tex = new Texture("./texture_for_models.png");
+		tex = new Texture("./textures/ForestTrail_UVs.png");
 
 		rock = new Model();
 		rock->loadFromFile("./models/rock.obj");
@@ -108,10 +108,18 @@ namespace GE {
 		crate = new Model();
 		crate->loadFromFile("./models/crate.obj");
 
+		fence = new Model();
+		fence->loadFromFile("./models/fence.obj");
+
+		tree = new Model();
+		tree->loadFromFile("./models/tree.obj");
+
 		// Put all of the models in the vector
 		loadedModels.push_back(rock);
 		loadedModels.push_back(sign);
 		loadedModels.push_back(crate);
+		loadedModels.push_back(fence);
+		loadedModels.push_back(tree);
 
 		// Create the Model renderer object
 		mr = new ModelRenderer();
