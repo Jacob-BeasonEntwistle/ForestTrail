@@ -98,6 +98,8 @@ namespace GE {
 
 		// Create the texture
 		tex = new Texture("./textures/ForestTrail_UVs.png");
+		// Create a blank texture
+		blank = new Texture("./textures/blank_texture.png");
 
 		rock = new Model();
 		rock->loadFromFile("./models/rock.obj");
@@ -114,18 +116,31 @@ namespace GE {
 		tree = new Model();
 		tree->loadFromFile("./models/tree.obj");
 
+		podium = new Model();
+		podium->loadFromFile("./models/podium.obj");
+
+		orb = new Model();
+		orb->loadFromFile("./models/orb.obj");
+
 		// Put all of the models in the vector
 		loadedModels.push_back(rock);
 		loadedModels.push_back(sign);
 		loadedModels.push_back(crate);
 		loadedModels.push_back(fence);
 		loadedModels.push_back(tree);
+		loadedModels.push_back(podium);
 
 		// Create the Model renderer object
 		mr = new ModelRenderer();
 
 		mr->init();
 		mr->setTexture(tex);
+
+		// Create the dynamic model renderer object
+		dmr = new ModelRenderer();
+		dmr->init();
+		dmr->setPos(8, dmr->getPosY(), 9);
+		dmr->setTexture(blank);
 
 		std::string skyboxPath = "./textures/skybox_textures/skybox";
 		skybox = new SkyboxRenderer(skyboxPath + "_front.png", skyboxPath + "_back.png", skyboxPath + "_right.png", skyboxPath + "_left.png", skyboxPath + "_top.png", skyboxPath + "_bottom.png");
@@ -244,6 +259,20 @@ namespace GE {
 		/*for (int i = 0; i < loadedModels.size(); i++) {
 
 		}*/
+
+		// Make the dynamic models move
+		float y = dmr->getPosY();
+		if (y >= 2.0f) {
+			y = 2.0f;
+			direction = -1.0f;
+		}
+		else if (y <= -1.0f) {
+			y = -1.0f;
+			direction = 1.0f;
+		}
+		y += speed * direction;
+		dmr->setPos(dmr->getPosX(), y, dmr->getPosZ());
+		dmr->setRotation(dmr->getRotX(), dmr->getRotY() + 1, dmr->getRotZ());
 	}
 
 	// Draw method that renders the scene
@@ -261,6 +290,9 @@ namespace GE {
 		for (int i = 0; i < loadedModels.size(); i++) {
 			mr->draw(cam, loadedModels[i]);
 		}
+
+		// Draw the dynamic models
+		dmr->draw(cam, orb);
 
 		SDL_GL_SwapWindow(window);
 	}
@@ -282,6 +314,12 @@ namespace GE {
 		if (mr != nullptr) {
 			mr->destroy();
 			delete mr;
+		}
+
+		// Delete the dynamic model renderer
+		if (dmr != nullptr) {
+			dmr->destroy();
+			delete dmr;
 		}
 
 		skybox->destroy();

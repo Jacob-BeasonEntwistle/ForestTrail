@@ -56,12 +56,22 @@ namespace GE {
 		Model* crate;
 		Model* fence;
 		Model* tree;
+		Model* podium;
+		Model* orb;
 
 		// Texture for all models
 		Texture* tex;
+		// Blank texture
+		Texture* blank;
 
 		// Model renderer
 		ModelRenderer* mr;
+
+		// Dynamic model renderer [Temporary]
+		ModelRenderer* dmr;
+		// Dynamic model variables [Temporary]
+		float direction = 1.0f;
+		float speed = 0.05f;
 
 		// For storing models
 		std::vector<Model*> loadedModels;
