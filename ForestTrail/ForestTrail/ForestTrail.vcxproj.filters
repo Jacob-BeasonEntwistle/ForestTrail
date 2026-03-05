@@ -39,6 +39,12 @@
     <ClInclude Include="source\SkyboxRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\Entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameEngine.cpp">

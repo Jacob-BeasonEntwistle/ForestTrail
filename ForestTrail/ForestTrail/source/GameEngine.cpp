@@ -101,46 +101,37 @@ namespace GE {
 		// Create a blank texture
 		blank = new Texture("./textures/blank_texture.png");
 
-		rock = new Model();
-		rock->loadFromFile("./models/rock.obj");
+		// Create the entities
+		rock = new Entity("./models/rock.obj", tex);
+		sign = new Entity("./models/sign.obj", tex);
+		crate = new Entity("./models/crate.obj", tex);
+		fence = new Entity("./models/fence.obj", tex);
+		tree = new Entity("./models/tree.obj", tex);
+		podium = new Entity("./models/podium.obj", tex);
+		orb = new Entity("./models/orb.obj", tex);
 
-		sign = new Model();
-		sign->loadFromFile("./models/sign.obj");
+		player = new Entity("./models/orb.obj", blank);
 
-		crate = new Model();
-		crate->loadFromFile("./models/crate.obj");
-
-		fence = new Model();
-		fence->loadFromFile("./models/fence.obj");
-
-		tree = new Model();
-		tree->loadFromFile("./models/tree.obj");
-
-		podium = new Model();
-		podium->loadFromFile("./models/podium.obj");
-
-		orb = new Model();
-		orb->loadFromFile("./models/orb.obj");
-
-		// Put all of the models in the vector
-		loadedModels.push_back(rock);
-		loadedModels.push_back(sign);
-		loadedModels.push_back(crate);
-		loadedModels.push_back(fence);
-		loadedModels.push_back(tree);
-		loadedModels.push_back(podium);
+		// Put all of the entities in the vector
+		loadedEntities.push_back(rock);
+		loadedEntities.push_back(sign);
+		loadedEntities.push_back(crate);
+		loadedEntities.push_back(fence);
+		loadedEntities.push_back(tree);
+		loadedEntities.push_back(podium);
+		loadedEntities.push_back(orb);
 
 		// Create the Model renderer object
 		mr = new ModelRenderer();
-
 		mr->init();
-		mr->setTexture(tex);
 
-		// Create the dynamic model renderer object
-		dmr = new ModelRenderer();
-		dmr->init();
-		dmr->setPos(8, dmr->getPosY(), 9);
-		dmr->setTexture(blank);
+		rock->getTransform().setPosition(12, 0, 8);
+		sign->getTransform().setPosition(-2, 0, 3);
+		crate->getTransform().setPosition(-14, 0, -4);
+		fence->getTransform().setPosition(10, 0, -10);
+		tree->getTransform().setPosition(9, 0, -12);
+		podium->getTransform().setPosition(-8, 0, 7);
+		orb->getTransform().setPosition(-8, 0, 7);
 
 		std::string skyboxPath = "./textures/skybox_textures/skybox";
 		skybox = new SkyboxRenderer(skyboxPath + "_front.png", skyboxPath + "_back.png", skyboxPath + "_right.png", skyboxPath + "_left.png", skyboxPath + "_top.png", skyboxPath + "_bottom.png");
@@ -180,6 +171,8 @@ namespace GE {
 				case SDL_SCANCODE_D:
 					keyStates[RIGHT] = true;
 					break;
+				case SDL_SCANCODE_TAB:
+					thirdPerson = !thirdPerson;
 				}
 			}
 			if (evt.type == SDL_KEYUP) {
@@ -255,13 +248,25 @@ namespace GE {
 
 	// Update method which updates the game logic
 	void GameEngine::update() {
-		// Do something for each model in the vector
-		/*for (int i = 0; i < loadedModels.size(); i++) {
+		if (thirdPerson) {
+			// Create a camera offset behind the player
+			glm::vec3 offset(0.0f, 2.0f, 5.0f);
+			glm::vec3 camPos = player->getTransform().getPosition() + offset;
+			cam->setPos(camPos);
+
+			// Look at player
+			cam->setTarget(glm::normalize(player->getTransform().getPosition() + glm::vec3(0.0f, 1.0f, 0.0f) - camPos));
+		}
+
+		// Do something for each entity in the vector
+		/*for (int i = 0; i < loadedEntities.size(); i++) {
 
 		}*/
 
-		// Make the dynamic models move
-		float y = dmr->getPosY();
+		// Moving the dynamic model
+		glm::vec3 orbPos = orb->getTransform().getPosition();
+		float y = orbPos.y;
+
 		if (y >= 2.0f) {
 			y = 2.0f;
 			direction = -1.0f;
@@ -271,8 +276,8 @@ namespace GE {
 			direction = 1.0f;
 		}
 		y += speed * direction;
-		dmr->setPos(dmr->getPosX(), y, dmr->getPosZ());
-		dmr->setRotation(dmr->getRotX(), dmr->getRotY() + 1, dmr->getRotZ());
+		// Applying the adjusted Y value to the models position
+		orb->getTransform().setPosition(orbPos.x, y, orbPos.z);
 	}
 
 	// Draw method that renders the scene
@@ -286,13 +291,14 @@ namespace GE {
 		// Render the triangle
 		triangle->draw(cam);
 
-		// Draw each model in the vector of loaded models
-		for (int i = 0; i < loadedModels.size(); i++) {
-			mr->draw(cam, loadedModels[i]);
+		// Draw each entity in the vector of loaded entities
+		for (int i = 0; i < loadedEntities.size(); i++) {
+			mr->draw(cam, loadedEntities[i]);
 		}
 
-		// Draw the dynamic models
-		dmr->draw(cam, orb);
+		if (thirdPerson) {
+			mr->draw(cam, player);
+		}
 
 		SDL_GL_SwapWindow(window);
 	}
@@ -305,21 +311,19 @@ namespace GE {
 			delete triangle;
 		}
 
-		// Delete each model from the vector of models
-		for (int i = 0; i < loadedModels.size(); i++) {
-			delete loadedModels[i];
+		// Delete each entity from the vector of models
+		for (int i = 0; i < loadedEntities.size(); i++) {
+			delete loadedEntities[i];
+		}
+
+		if (player != nullptr) {
+			delete player;
 		}
 
 		// Delete the model renderer
 		if (mr != nullptr) {
 			mr->destroy();
 			delete mr;
-		}
-
-		// Delete the dynamic model renderer
-		if (dmr != nullptr) {
-			dmr->destroy();
-			delete dmr;
 		}
 
 		skybox->destroy();

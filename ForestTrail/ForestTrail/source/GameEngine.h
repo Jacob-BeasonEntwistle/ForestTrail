@@ -7,9 +7,9 @@
 #include "ShaderUtils.h"
 #include "Camera.h"
 #include "TriangleRenderer.h"
-#include "Model.h"
 #include "ModelRenderer.h"
 #include "SkyboxRenderer.h"
+#include "Entity.h"
 
 namespace GE {
 	class GameEngine {
@@ -47,19 +47,24 @@ namespace GE {
 		// Camera
 		Camera* cam;
 
+		// Third person toggle
+		bool thirdPerson = false;
+
 		// Distance/direction to look from camera
 		glm::vec3 dist;
 
-		// Models
-		Model* rock;
-		Model* sign;
-		Model* crate;
-		Model* fence;
-		Model* tree;
-		Model* podium;
-		Model* orb;
+		// Entities
+		Entity* rock;
+		Entity* sign;
+		Entity* crate;
+		Entity* fence;
+		Entity* tree;
+		Entity* podium;
+		Entity* orb;
 
-		// Texture for all models
+		Entity* player;
+
+		// Texture for all Models
 		Texture* tex;
 		// Blank texture
 		Texture* blank;
@@ -67,14 +72,12 @@ namespace GE {
 		// Model renderer
 		ModelRenderer* mr;
 
-		// Dynamic model renderer [Temporary]
-		ModelRenderer* dmr;
-		// Dynamic model variables [Temporary]
+		// Orb (dynamic model) variables
 		float direction = 1.0f;
 		float speed = 0.05f;
 
-		// For storing models
-		std::vector<Model*> loadedModels;
+		// For storing entities
+		std::vector<Entity*> loadedEntities;
 
 		// TriangleRenderer object variable
 		TriangleRenderer* triangle;

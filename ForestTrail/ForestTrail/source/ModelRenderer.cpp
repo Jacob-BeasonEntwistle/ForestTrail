@@ -1,14 +1,12 @@
 #include "ModelRenderer.h"
 #include <iostream>
-#include <glm/gtc/type_ptr.hpp>
 #include "Model.h"
 #include "ShaderUtils.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace GE {
 	ModelRenderer::ModelRenderer() {
-		pos_x = pos_y = pos_z = 0.0f;
-		rot_x = rot_y = rot_z = 0.0f;
-		scale_x = scale_y = scale_z = 1.0f;
+		
 	}
 	ModelRenderer::~ModelRenderer() {
 
@@ -78,17 +76,21 @@ namespace GE {
 	}
 
 	// Draw renders the triangles from the buffer object
-	void ModelRenderer::draw(Camera* cam, Model* model) {
+	void ModelRenderer::draw(Camera* cam, Entity* entity) {
 		glEnable(GL_CULL_FACE);
 
-		// Calculate the transformation matrix for the object
+		glm::vec3 pos = entity->getTransform().getPosition();
+		glm::vec3 rot = entity->getTransform().getRotation();
+		glm::vec3 scale = entity->getTransform().getScale();
+
+		//Calculate the transformation matrix for the object
 		glm::mat4 transformationMat = glm::mat4(1.0f);
 
-		transformationMat = glm::translate(transformationMat, glm::vec3(pos_x, pos_y, pos_z));
-		transformationMat = glm::rotate(transformationMat, glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
-		transformationMat = glm::rotate(transformationMat, glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
-		transformationMat = glm::rotate(transformationMat, glm::radians(rot_z), glm::vec3(0.0f, 0.0f, 1.0f));
-		transformationMat = glm::scale(transformationMat, glm::vec3(scale_x, scale_y, scale_z));
+		transformationMat = glm::translate(transformationMat, pos);
+		transformationMat = glm::rotate(transformationMat, glm::radians(rot.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		transformationMat = glm::rotate(transformationMat, glm::radians(rot.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		transformationMat = glm::rotate(transformationMat, glm::radians(rot.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		transformationMat = glm::scale(transformationMat, scale);
 
 		glm::mat4 viewMat = cam->getViewMatrix();
 		glm::mat4 projectionMat = cam->getProjectionMatrix();
@@ -102,7 +104,7 @@ namespace GE {
 		glUniformMatrix4fv(projectionUniformId, 1, GL_FALSE, glm::value_ptr(projectionMat));
 
 		// Select the vertex buffer object into the context
-		glBindBuffer(GL_ARRAY_BUFFER, model->getVertices());
+		glBindBuffer(GL_ARRAY_BUFFER, entity->getModel()->getVertices());
 
 		// Enable the attribute to be passed vertices from the vertex buffer object
 		glEnableVertexAttribArray(vertexPos3DLocation);
@@ -119,10 +121,10 @@ namespace GE {
 		// Select the texture
 		glActiveTexture(GL_TEXTURE0);
 		glUniform1i(samplerId, 0);
-		glBindTexture(GL_TEXTURE_2D, tex->getTextureName());
+		glBindTexture(GL_TEXTURE_2D, entity->getTexture()->getTextureName());
 
 		// Draw the model
-		glDrawArrays(GL_TRIANGLES, 0, model->getNumVertices());
+		glDrawArrays(GL_TRIANGLES, 0, entity->getModel()->getNumVertices());
 
 		// Unselect the attribute from the context
 		glDisableVertexAttribArray(vertexPos3DLocation);

@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\Entity.h" />
     <ClInclude Include="source\SkyboxRenderer.h" />
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\GameEngine.h" />
@@ -141,6 +142,7 @@
     <ClInclude Include="source\ShaderUtils.h" />
     <ClInclude Include="source\Texture.h" />
     <ClInclude Include="source\TriangleRenderer.h" />
+    <ClInclude Include="source\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\SkyboxRenderer.cpp" />
