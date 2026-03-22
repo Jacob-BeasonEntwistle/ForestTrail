@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\Entity.h" />
+    <ClInclude Include="source\FPSCameraController.h" />
     <ClInclude Include="source\SkyboxRenderer.h" />
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\GameEngine.h" />

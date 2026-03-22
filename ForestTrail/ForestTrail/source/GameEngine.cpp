@@ -86,6 +86,8 @@ namespace GE {
 			glm::vec3(0.0f, 1.0f, 0.0f),	// Up direction
 			FOV, w / h, 0.1f, 100.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
 
+		fpsCam = new FPSCameraController(cam);
+
 		// Create the TriangleRenderer object
 		triangle = new TriangleRenderer();
 
@@ -97,7 +99,7 @@ namespace GE {
 		triangle->setScale(100.0f, 100.0f, 100.0f);
 
 		// Create the texture
-		tex = new Texture("./textures/ForestTrail_UVs.png");
+		tex = new Texture("./textures/ForestTrail_UVs_blank.png");
 		// Create a blank texture
 		blank = new Texture("./textures/blank_texture.png");
 
@@ -109,6 +111,7 @@ namespace GE {
 		tree = new Entity("./models/tree.obj", tex);
 		podium = new Entity("./models/podium.obj", tex);
 		orb = new Entity("./models/orb.obj", tex);
+		hedgehog = new Entity("./models/hedgehog.obj", tex);
 
 		player = new Entity("./models/orb.obj", blank);
 
@@ -120,6 +123,7 @@ namespace GE {
 		loadedEntities.push_back(tree);
 		loadedEntities.push_back(podium);
 		loadedEntities.push_back(orb);
+		loadedEntities.push_back(hedgehog);
 
 		// Create the Model renderer object
 		mr = new ModelRenderer();
@@ -132,9 +136,12 @@ namespace GE {
 		tree->getTransform().setPosition(9, 0, -12);
 		podium->getTransform().setPosition(-8, 0, 7);
 		orb->getTransform().setPosition(-8, 0, 7);
+		hedgehog->getTransform().setPosition(20, 0, 20);
 
 		std::string skyboxPath = "./textures/skybox_textures/skybox";
 		skybox = new SkyboxRenderer(skyboxPath + "_front.png", skyboxPath + "_back.png", skyboxPath + "_right.png", skyboxPath + "_left.png", skyboxPath + "_top.png", skyboxPath + "_bottom.png");
+
+		lastTicks = SDL_GetTicks();
 
 		return true;
 	}
@@ -200,63 +207,13 @@ namespace GE {
 		return true;
 	}
 
-	void GameEngine::processInput() {
-		float mouseSens = cam->getMouseSens();
-		float camSpeed = cam->getCamSpeed();
-
-		// Get current mouse x and y
-		int mouse_x, mouse_y;
-		SDL_GetMouseState(&mouse_x, &mouse_y);
-		// Calculate the difference between old mouse and new mouse position - note inversion on y as this is flipped
-		int diffx = mouse_x - (w / 2);
-		int diffy = (h / 2) - mouse_y;
-
-		// Update the yaw and pitch based on the mouse differential
-		cam->setYaw(cam->getYaw() + diffx * mouseSens);
-		cam->setPitch(cam->getPitch() + diffy * mouseSens);
-
-		// Set the mouse back to the centre
-		SDL_WarpMouseInWindow(window, w / 2, h / 2);
-
-		// Calculate new camera facing direction from the change to yaw and pitch
-		glm::vec3 direction;
-		direction.x = cos(glm::radians(cam->getYaw())) * cos(glm::radians(cam->getPitch()));
-		direction.y = sin(glm::radians(cam->getPitch()));
-		direction.z = sin(glm::radians(cam->getYaw())) * cos(glm::radians(cam->getPitch()));
-		cam->setTarget(glm::normalize(direction));
-
-		// Handle camera movement based upon the relevant key press
-		if (keyStates[UP]) {
-			cam->setPos(cam->getPos() + cam->getTarget() * camSpeed);
-		}
-		if (keyStates[DOWN]) {
-			cam->setPos(cam->getPos() - cam->getTarget() * camSpeed);
-		}
-		if (keyStates[LEFT]) {
-			// Take away the cross product of the facing and up vector from the camera position - strafe left
-			cam->setPos(cam->getPos() - glm::normalize(glm::cross(cam->getTarget(), cam->getUpDir())) * camSpeed);
-		}
-		if (keyStates[RIGHT]) {
-			// Take away the cross product of the facing and up vector from the camera position - strafe right
-			cam->setPos(cam->getPos() + glm::normalize(glm::cross(cam->getTarget(), cam->getUpDir())) * camSpeed);
-		}
-
-		// Call to update camera view matrices
-		// Projection is also updated in case effects like zoom are used (e.g. right click to aim would shrink the fov slightly)
-		cam->updateCamMatrices();
-	}
-
 	// Update method which updates the game logic
 	void GameEngine::update() {
-		if (thirdPerson) {
-			// Create a camera offset behind the player
-			glm::vec3 offset(0.0f, 2.0f, 5.0f);
-			glm::vec3 camPos = player->getTransform().getPosition() + offset;
-			cam->setPos(camPos);
+		Uint32 now = SDL_GetTicks();
+		float deltaTime = (now - lastTicks) / 1000.0f;	// Seconds
+		lastTicks = now;
 
-			// Look at player
-			cam->setTarget(glm::normalize(player->getTransform().getPosition() + glm::vec3(0.0f, 1.0f, 0.0f) - camPos));
-		}
+		fpsCam->update(deltaTime, keyStates);
 
 		// Do something for each entity in the vector
 		/*for (int i = 0; i < loadedEntities.size(); i++) {
@@ -265,19 +222,30 @@ namespace GE {
 
 		// Moving the dynamic model
 		glm::vec3 orbPos = orb->getTransform().getPosition();
+		glm::vec3 orbRot = orb->getTransform().getRotation();
 		float y = orbPos.y;
 
 		if (y >= 2.0f) {
 			y = 2.0f;
-			direction = -1.0f;
+			dynamDirection = -1.0f;
 		}
 		else if (y <= -1.0f) {
 			y = -1.0f;
-			direction = 1.0f;
+			dynamDirection = 1.0f;
 		}
-		y += speed * direction;
+		y += dynamSpeed * dynamDirection * deltaTime;
 		// Applying the adjusted Y value to the models position
 		orb->getTransform().setPosition(orbPos.x, y, orbPos.z);
+		orb->getTransform().setRotation(orbRot.x, orbRot.y + 2.0f, orbRot.z);
+
+		// Hedgehog movement
+		glm::vec3 hedgehogPos = hedgehog->getTransform().getPosition();
+		glm::vec3 hedgehogRot = hedgehog->getTransform().getRotation();
+
+		if (hedgehogPos.x < 25) {
+			hedgehog->getTransform().setPosition(hedgehogPos.x + 0.02f, hedgehogPos.y, hedgehogPos.z);
+		}
+		hedgehog->getTransform().setRotation(hedgehogRot.x, hedgehogRot.y + 0.5f, hedgehogRot.z);
 	}
 
 	// Draw method that renders the scene

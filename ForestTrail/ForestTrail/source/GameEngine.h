@@ -6,6 +6,7 @@
 #include <vector>
 #include "ShaderUtils.h"
 #include "Camera.h"
+#include "FPSCameraController.h"
 #include "TriangleRenderer.h"
 #include "ModelRenderer.h"
 #include "SkyboxRenderer.h"
@@ -20,7 +21,6 @@ namespace GE {
 
 		bool init();			// Object initialisation
 		bool keep_running();	// Indicates whether a user has closed the window/game
-		void processInput();	// Process key presses
 		void update();			// This is where the game logic is updated
 		void draw();			// This is where a frame is rendered
 		void shutdown();		// This is called when the game is ending, it releases objects created during the game
@@ -33,22 +33,28 @@ namespace GE {
 		int FOV;
 
 	private:
+		// Members to track ticks between frames
+		Uint32 lastTicks = 0;
+
 		SDL_Window* window;
 
 		SDL_GLContext glContext;
 
 		bool vsync = false;		// By default vsync is off
 
+		// [Movement keys & settings]
 		// Array to hold states of key presses
 		bool keyStates[4] = { 0, 0, 0, 0 };
 		// Indices to the array to store respective key presses
 		int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
 
-		// Camera
+		// [Camera & settings]
 		Camera* cam;
-
 		// Third person toggle
 		bool thirdPerson = false;
+
+		// Camera controllers
+		FPSCameraController* fpsCam;
 
 		// Distance/direction to look from camera
 		glm::vec3 dist;
@@ -61,6 +67,7 @@ namespace GE {
 		Entity* tree;
 		Entity* podium;
 		Entity* orb;
+		Entity* hedgehog;
 
 		Entity* player;
 
@@ -73,8 +80,8 @@ namespace GE {
 		ModelRenderer* mr;
 
 		// Orb (dynamic model) variables
-		float direction = 1.0f;
-		float speed = 0.05f;
+		float dynamDirection = 1.0f;
+		float dynamSpeed = 1.25f;
 
 		// For storing entities
 		std::vector<Entity*> loadedEntities;

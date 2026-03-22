@@ -22,11 +22,12 @@ namespace GE {
 			}
 		}
 
-		// Getter for the transform
+		// Getters for the transform, model, and texture
 		Transform& getTransform() { return transform; }
 		Model* getModel() { return model; }
 		Texture* getTexture() { return tex; }
 
+		// Setters for the model and texture
 		void setModel(Model* m) {
 			model = m;
 		}

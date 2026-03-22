@@ -1,17 +1,22 @@
 #pragma once
 
-#include <SDL.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace GE {
 	class Camera {
 	public:
-		Camera(glm::vec3 cam_pos, glm::vec3 cam_target, glm::vec3 cam_upDir, float fov, float ar, float near, float far) {
+		Camera(glm::vec3 cam_pos, glm::vec3 cam_forwardDir, glm::vec3 cam_upDir, float fov, float ar, float near, float far) {
 			// Initialise the camera variables to the values passed on the parameters
 			pos = cam_pos;
-			target = cam_target;
+			forwardDir = cam_forwardDir;
 			up = cam_upDir;
+
+			lookDir = forwardDir;
+
+			// Initialise pitch & yaw
+			pitch = 0.0f;
+			yaw = 0.0f;
 
 			fovy = fov;
 			aspectR = ar;
@@ -19,17 +24,6 @@ namespace GE {
 			farClip = far;
 
 			updateCamMatrices();
-
-			// Get the active GL window
-			SDL_Window* window = SDL_GL_GetCurrentWindow();
-
-			// Get the width and height, in pixels, of the window
-			int w, h;
-
-			SDL_GetWindowSize(window, &w, &h);
-
-			// Set mouse to the centre
-			SDL_WarpMouseInWindow(SDL_GL_GetCurrentWindow(), w / 2, h / 2);
 		}
 
 		~Camera() {
@@ -37,37 +31,20 @@ namespace GE {
 		}
 
 		// Accessor methods
-		float getCamSpeed() {
-			return camSpeed;
-		}
-		float getMouseSens() {
-			return mouseSens;
-		}
-
-		// Return the position of the camera in terms of x, y, z
-		float getPosX() {
-			return pos.x;
-		}
-
-		float getPosY() {
-			return pos.y;
-		}
-
-		float getPosZ() {
-			return pos.z;
-		}
-
+		// Return the position of the camera
 		glm::vec3 getPos() {
 			return pos;
 		}
 
-		// Target or what location the camera is looking at
-		const glm::vec3 getTarget() {
-			return target;
+		glm::vec3 getForwardDir() {
+			return forwardDir;
 		}
 
-		// Up direction
-		glm::vec3 getUpDir() const {
+		glm::vec3 getLookDir() {
+			return lookDir;
+		}
+
+		glm::vec3 getUpDir() {
 			return up;
 		}
 
@@ -93,40 +70,31 @@ namespace GE {
 
 
 		// Mutator methods
-		// Set position
-		void setPosX(float newX) {
-			pos = glm::vec3(newX, pos.y, pos.z);
-
-			updateCamMatrices();
-		}
-
-		void setPosY(float newY) {
-			pos = glm::vec3(pos.x, newY, pos.z);
-
-			updateCamMatrices();
-		}
-
-		void setPosZ(float newZ) {
-			pos = glm::vec3(pos.x, pos.y, newZ);
-
-			updateCamMatrices();
-		}
-
 		// Set position for all axes in one method
-		void setPos(float newX, float newY, float newZ) {
-			pos = glm::vec3(newX, newY, newZ);
-
-			updateCamMatrices();
-		}
-
 		void setPos(glm::vec3 newPos) {
 			pos = newPos;
+
+			updateCamMatrices();
+		}
+
+		void setPitch(float newPitch) {
+			pitch = newPitch;
+			// Clamp the pitch values prevent looking straight down/up
+			if (pitch > 70.0f) pitch = 70.0f;
+			if (pitch < -70.0f) pitch = -70.0f;
+
+			updateCamMatrices();
+		}
+
+		void setYaw(float newYaw) {
+			yaw = newYaw;
+
 			updateCamMatrices();
 		}
 
 		// Set new target
-		void setTarget(glm::vec3 newTarget) {
-			target = newTarget;
+		void setForwardDir(glm::vec3 newDir) {
+			forwardDir = newDir;
 
 			updateCamMatrices();
 		}
@@ -138,17 +106,6 @@ namespace GE {
 			updateCamMatrices();
 		}
 
-		// Set pitch and yaw
-		void setPitch(float newPitch) {
-			pitch = newPitch;
-			// Clamp the pitch values so we can't point down at our feet or look straight up
-			if (pitch > 70.0f) pitch = 70.0f;
-			if (pitch < -70.0f) pitch = -70.0f;
-		}
-		void setYaw(float newYaw) {
-			yaw = newYaw;
-		}
-
 		// Set the fov
 		void setFov(float newFov) {
 			fovy = newFov;
@@ -156,9 +113,7 @@ namespace GE {
 			updateCamMatrices();
 		}
 
-		// Set the aspect ratio.
-		// You might use this method if the program's window
-		// can be resized meaning the width and height change
+		// Set the aspect ratio
 		void setAspectRatio(float newAR) {
 			aspectR = newAR;
 
@@ -171,28 +126,22 @@ namespace GE {
 
 			updateCamMatrices();
 		}
-
 		void setFarClip(float newFarClip) {
 			farClip = newFarClip;
 
 			updateCamMatrices();
 		}
 
-		// Update the camera matrices done in response to
-		// a member variable variable being updated
-		void updateCamMatrices() {
-			viewMat = glm::lookAt(pos, pos + target, up);
-			projectionMat = glm::perspective(glm::radians(fovy), aspectR, nearClip, farClip);
-		}
-
 	private:
-		SDL_Window* window;
-
 		// Member variables
 		// Camera view variables
 		glm::vec3 pos;
-		glm::vec3 target;
+		glm::vec3 forwardDir;
+		glm::vec3 lookDir;
 		glm::vec3 up;
+
+		// Camera orientation
+		float pitch, yaw;
 
 		// Camera projection variables
 		float fovy;
@@ -200,16 +149,24 @@ namespace GE {
 		float nearClip;
 		float farClip;
 
-		// Camera pitch and yaw values
-		float pitch = 0.0f;
-		float yaw = -90.0f;	// To ensure the camera points along the -z axis to start with
-
-		// Camera speed and mouse sensitivity
-		float camSpeed = 0.2f;
-		float mouseSens = 0.1f;
-
 		// View and projection matrices
 		glm::mat4 viewMat;
 		glm::mat4 projectionMat;
+
+		// Update the camera matrices when a member variable is updated
+		void updateCamMatrices() {
+			// Cam matrix taking yaw and pitch into account
+			glm::mat4 rollpitchyawMat = glm::mat4(1.0f);
+
+			// Calculate rotation matrix (yaw is negative because OpenGL rotations are counter clockwise)
+			rollpitchyawMat = glm::rotate(rollpitchyawMat, glm::radians(-yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+			rollpitchyawMat = glm::rotate(rollpitchyawMat, glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			// Calculate new look at direction based on the forward direction
+			lookDir = rollpitchyawMat * glm::vec4(forwardDir, 0.0f);
+
+			viewMat = glm::lookAt(pos, pos + lookDir, up);
+			projectionMat = glm::perspective(glm::radians(fovy), aspectR, nearClip, farClip);
+		}
 	};
 }
