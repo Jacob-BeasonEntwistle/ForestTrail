@@ -48,6 +48,9 @@
     <ClInclude Include="source\FPSCameraController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\ThirdPersonController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameEngine.cpp">

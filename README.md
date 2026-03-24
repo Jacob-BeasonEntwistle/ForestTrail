@@ -15,9 +15,9 @@ The game scene will be a forest that encourages exploration and presents the pla
 - Textures + UVs (stone, wood, grass/dirt ground)
 - Skybox/Skydome
 
-### 50-59% (started)
+### 50-59%
 - Third person camera (+ switching between povs)
-- Dynamic models (rotating statue?)
+- Dynamic models (rotating statue and hedgehog)
 
 ## Future Features
 ### 50-59% (Optional)

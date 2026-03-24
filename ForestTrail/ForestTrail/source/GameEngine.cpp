@@ -3,8 +3,8 @@
 
 namespace GE {
 	GameEngine::GameEngine() {
-		w = 1080;
-		h = 720;
+		w = 1024;
+		h = 768;
 		windowflags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 		FOV = 60.0f;
 	}
@@ -81,17 +81,15 @@ namespace GE {
 		dist = glm::vec3(0.0f, 0.0f, -100.0f);
 
 		// Create camera object
-		cam = new Camera(glm::vec3(0.0f, 10.0f, 5.0f),	// Position
+		cam = new Camera(glm::vec3(0.0f, 8.0f, 15.0f),	// Position
 			glm::vec3(0.0f, 0.0f, 20.0f) + dist,	// Look at
 			glm::vec3(0.0f, 1.0f, 0.0f),	// Up direction
 			FOV, w / h, 0.1f, 100.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
 
-		fpsCam = new FPSCameraController(cam);
-
 		// Create the TriangleRenderer object
 		triangle = new TriangleRenderer();
 
-		// Initialise the object
+		// Initialise the terrain
 		triangle->init();
 		
 		triangle->setPos(0.0f, 0.0f, 0.0f);
@@ -129,17 +127,23 @@ namespace GE {
 		mr = new ModelRenderer();
 		mr->init();
 
-		rock->getTransform().setPosition(12, 0, 8);
-		sign->getTransform().setPosition(-2, 0, 3);
-		crate->getTransform().setPosition(-14, 0, -4);
-		fence->getTransform().setPosition(10, 0, -10);
-		tree->getTransform().setPosition(9, 0, -12);
-		podium->getTransform().setPosition(-8, 0, 7);
-		orb->getTransform().setPosition(-8, 0, 7);
-		hedgehog->getTransform().setPosition(20, 0, 20);
+		rock->getTransform().setPosition(12.0f, 0.0f, 8.0f);
+		sign->getTransform().setPosition(-2.0f, -1.0f, 3.0f);
+		crate->getTransform().setPosition(-14.0f, 0.0f, -4.0f);
+		fence->getTransform().setPosition(10.0f, 0.0f, -10.0f);
+		tree->getTransform().setPosition(9.0f, 0.0f, -12.0f);
+		podium->getTransform().setPosition(-8.0f, 0.0f, 7.0f);
+		orb->getTransform().setPosition(-8.0f, 0.0f, 7.0f);
+		hedgehog->getTransform().setPosition(20.0f, 0.0f, 20.0f);
+
+		player->getTransform().setPosition(0.0f, 4.0f, 15.0f);
 
 		std::string skyboxPath = "./textures/skybox_textures/skybox";
 		skybox = new SkyboxRenderer(skyboxPath + "_front.png", skyboxPath + "_back.png", skyboxPath + "_right.png", skyboxPath + "_left.png", skyboxPath + "_top.png", skyboxPath + "_bottom.png");
+
+		// Create the camera controllers
+		fpsCam = new FPSCameraController(cam);
+		thirdCam = new ThirdPersonController(cam, player);
 
 		lastTicks = SDL_GetTicks();
 
@@ -213,7 +217,12 @@ namespace GE {
 		float deltaTime = (now - lastTicks) / 1000.0f;	// Seconds
 		lastTicks = now;
 
-		fpsCam->update(deltaTime, keyStates);
+		if (thirdPerson) {
+			thirdCam->update(deltaTime, keyStates);
+		}
+		else {
+			fpsCam->update(deltaTime, keyStates);
+		}
 
 		// Do something for each entity in the vector
 		/*for (int i = 0; i < loadedEntities.size(); i++) {

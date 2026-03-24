@@ -7,6 +7,7 @@
 #include "ShaderUtils.h"
 #include "Camera.h"
 #include "FPSCameraController.h"
+#include "ThirdPersonController.h"
 #include "TriangleRenderer.h"
 #include "ModelRenderer.h"
 #include "SkyboxRenderer.h"
@@ -55,6 +56,7 @@ namespace GE {
 
 		// Camera controllers
 		FPSCameraController* fpsCam;
+		ThirdPersonController* thirdCam;
 
 		// Distance/direction to look from camera
 		glm::vec3 dist;
