@@ -99,7 +99,7 @@ namespace GE {
 		triangle->setScale(100.0f, 100.0f, 100.0f);
 
 		// Create the texture
-		tex = new Texture("./textures/ForestTrail_UVs_blank.png");
+		tex = new Texture("./textures/ForestTrail_textures.png");
 		// Create a blank texture
 		blank = new Texture("./textures/blank_texture.png");
 
