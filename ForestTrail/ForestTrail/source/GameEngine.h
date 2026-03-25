@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <vector>
+#include <sstream>
 #include "ShaderUtils.h"
 #include "Camera.h"
 #include "FPSCameraController.h"
@@ -12,6 +13,7 @@
 #include "ModelRenderer.h"
 #include "SkyboxRenderer.h"
 #include "Entity.h"
+#include "FontRendererFT.h"
 
 namespace GE {
 	class GameEngine {
@@ -93,6 +95,9 @@ namespace GE {
 		
 		// SkyboxRenderer object variable
 		SkyboxRenderer* skybox;
+
+		// FontRendererFT object variable
+		FontRendererFT* fontFT;
 	};
 
 	// Helper function

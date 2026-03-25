@@ -145,6 +145,9 @@ namespace GE {
 		fpsCam = new FPSCameraController(cam);
 		thirdCam = new ThirdPersonController(cam, player);
 
+		fontFT = new FontRendererFT();
+		fontFT->init();
+
 		lastTicks = SDL_GetTicks();
 
 		return true;
@@ -215,6 +218,7 @@ namespace GE {
 	void GameEngine::update() {
 		Uint32 now = SDL_GetTicks();
 		float deltaTime = (now - lastTicks) / 1000.0f;	// Seconds
+
 		lastTicks = now;
 
 		if (thirdPerson) {
@@ -275,6 +279,10 @@ namespace GE {
 
 		if (thirdPerson) {
 			mr->draw(cam, player);
+			fontFT->RenderText("[ THIRD-PERSON CAMERA ]", 48, h - 48, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+		else {
+			fontFT->RenderText("[ FREE-ROAM CAMERA ]", 48, h - 48, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 		}
 
 		SDL_GL_SwapWindow(window);
@@ -301,6 +309,10 @@ namespace GE {
 		if (mr != nullptr) {
 			mr->destroy();
 			delete mr;
+		}
+
+		if (fontFT != nullptr) {
+			delete fontFT;
 		}
 
 		skybox->destroy();

@@ -19,6 +19,9 @@ The game scene will be a forest that encourages exploration and presents the pla
 - Third person camera (+ switching between povs)
 - Dynamic models (rotating statue and hedgehog)
 
+### 60-69% (Started)
+- HUD (showing current camera mode)
+
 ## Future Features
 ### 50-59% (Optional)
 - FPS text (UI)
@@ -26,7 +29,7 @@ The game scene will be a forest that encourages exploration and presents the pla
 
 ### 60-69%
 - Instancing (rocks, trees)
-- HUD (showing FPS, current camera mode, in-world position)
+- HUD (showing FPS, in-world position)
 (Optional: Minimap)
 
 ### 70%+

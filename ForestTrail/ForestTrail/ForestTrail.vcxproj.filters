@@ -51,6 +51,9 @@
     <ClInclude Include="source\ThirdPersonController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\FontRendererFT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameEngine.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\SkyboxRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\FontRendererFT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
