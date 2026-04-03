@@ -26,6 +26,7 @@ namespace GE {
 		Transform& getTransform() { return transform; }
 		Model* getModel() { return model; }
 		Texture* getTexture() { return tex; }
+		std::string getName() { return name; }
 
 		// Setters for the model and texture
 		void setModel(Model* m) {
@@ -34,10 +35,14 @@ namespace GE {
 		void setTexture(Texture* t) {
 			tex = t;
 		}
+		void setName(const std::string& n) {
+			name = n;
+		}
 
 	private:
 		Model* model;
 		Texture* tex;
 		Transform transform;
+		std::string name;
 	};
 }

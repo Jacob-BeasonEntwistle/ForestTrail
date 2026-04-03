@@ -35,6 +35,10 @@ namespace GE {
 			float minScale = 1.0f, float maxScale = 1.0f
 		);
 
+		int getInstanceCount() {
+			return numInstances;
+		}
+
 		void setInstanceData(const std::vector<InstancePosRotScale>& instances);
 		
 		void setTexture(Texture *_tex) {

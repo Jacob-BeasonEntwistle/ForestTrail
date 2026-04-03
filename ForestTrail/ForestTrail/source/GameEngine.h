@@ -62,6 +62,8 @@ namespace GE {
 		Camera* cam;
 		// Third person toggle
 		bool thirdPerson = false;
+		// Stats toggle
+		bool showStats = false;
 
 		// Camera controllers
 		FPSCameraController* fpsCam;
@@ -109,6 +111,10 @@ namespace GE {
 		// InstanceRenderer object variable
 		InstanceRenderer* treeIr;
 		InstanceRenderer* rockIr;
+
+		// Vectors used for rendering instances
+		std::vector<InstancePosRotScale> treeInstances;
+		std::vector<InstancePosRotScale> rockInstances;
 	};
 
 	// Helper function
