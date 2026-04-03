@@ -38,6 +38,12 @@ namespace GE {
 	private:
 		// Members to track ticks between frames
 		Uint32 lastTicks = 0;
+		
+		// Members for the fps counter
+		Uint32 fpsLastTime;
+		int frameCount;
+		int currentFPS;
+		std::string fpsText;
 
 		SDL_Window* window;
 

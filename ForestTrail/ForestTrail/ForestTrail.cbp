@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ForestTrail" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug x64">
+				<Option output="../Debug/ForestTrail" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Debug/" />
+				<Option deps_output="../Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add directory="$(ProjDir)externals/SDL2/include/" />
+					<Add directory="$(ProjDir)externals/glew/include/" />
+					<Add directory="$(ProjDir)externals/glm/" />
+					<Add directory="$(ProjDir)externals/assimp/include/" />
+					<Add directory="$(ProjDir)externals/SDL2_image/include/" />
+					<Add directory="$(ProjDir)externals/freetype/include/" />
+					<Add directory="$(IncludePath)/" />
+				</Compiler>
+				<Linker>
+					<Add library="GL" />
+					<Add library="GLEW" />
+					<Add library="SDL2" />
+					<Add library="SDL2_image" />
+					<Add library="assimp" />
+					<Add library="freetype" />
+					<Add directory="$(ProjDir)externals/SDL2/lib/x64/" />
+					<Add directory="$(ProjDir)externals/glew/lib/x64/" />
+					<Add directory="$(ProjDir)externals/assimp/lib/x64/" />
+					<Add directory="$(ProjDir)externals/SDL2_image/lib/x64/" />
+					<Add directory="$(ProjDir)externals/freetype/win64/" />
+					<Add directory="$(LibraryPath)/" />
+				</Linker>
+			</Target>
+			<Target title="Release x64">
+				<Option output="../Release/ForestTrail" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Release/" />
+				<Option deps_output="../Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add option="-Wall" />
+					<Add directory="$(ProjDir)externals/SDL2/include/" />
+					<Add directory="$(ProjDir)externals/glew/include/" />
+					<Add directory="$(ProjDir)externals/glm/" />
+					<Add directory="$(ProjDir)externals/assimp/include/" />
+					<Add directory="$(ProjDir)externals/SDL2_image/include/" />
+					<Add directory="$(IncludePath)/" />
+				</Compiler>
+				<Linker>
+					<Add library="opengl32.lib" />
+					<Add library="glew32.lib" />
+					<Add library="assimp-vc142-mtd.lib" />
+					<Add library="SDL2.lib" />
+					<Add library="SDL2main.lib" />
+					<Add library="SDL2_image.lib" />
+					<Add library="winmm.lib" />
+					<Add library="comctl32.lib" />
+					<Add library="kernel32.lib" />
+					<Add library="user32.lib" />
+					<Add library="gdi32.lib" />
+					<Add library="winspool.lib" />
+					<Add library="comdlg32.lib" />
+					<Add library="advapi32.lib" />
+					<Add library="shell32.lib" />
+					<Add library="ole32.lib" />
+					<Add library="oleaut32.lib" />
+					<Add library="uuid.lib" />
+					<Add library="odbc32.lib" />
+					<Add library="odbccp32.lib" />
+					<Add directory="$(ProjDir)externals/SDL2/lib/x64/" />
+					<Add directory="$(ProjDir)externals/glew/lib/x64/" />
+					<Add directory="$(ProjDir)externals/assimp/lib/x64/" />
+					<Add directory="$(ProjDir)externals/SDL2_image/lib/x64/" />
+					<Add directory="$(LibraryPath)/" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="source/Camera.h" />
+		<Unit filename="source/Entity.h" />
+		<Unit filename="source/FPSCameraController.h" />
+		<Unit filename="source/FontRendererFT.cpp" />
+		<Unit filename="source/FontRendererFT.h" />
+		<Unit filename="source/GameEngine.cpp" />
+		<Unit filename="source/GameEngine.h" />
+		<Unit filename="source/Model.cpp" />
+		<Unit filename="source/Model.h" />
+		<Unit filename="source/ModelRenderer.cpp" />
+		<Unit filename="source/ModelRenderer.h" />
+		<Unit filename="source/ShaderUtils.cpp" />
+		<Unit filename="source/ShaderUtils.h" />
+		<Unit filename="source/SkyboxRenderer.cpp" />
+		<Unit filename="source/SkyboxRenderer.h" />
+		<Unit filename="source/Texture.cpp" />
+		<Unit filename="source/Texture.h" />
+		<Unit filename="source/ThirdPersonController.h" />
+		<Unit filename="source/Transform.h" />
+		<Unit filename="source/TriangleRenderer.cpp" />
+		<Unit filename="source/TriangleRenderer.h" />
+		<Unit filename="source/main.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

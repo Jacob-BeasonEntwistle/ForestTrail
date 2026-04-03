@@ -149,6 +149,10 @@ namespace GE {
 		fontFT->init();
 
 		lastTicks = SDL_GetTicks();
+		
+		fpsLastTime = SDL_GetTicks();
+		frameCount = 0;
+		currentFPS = 0;
 
 		return true;
 	}
@@ -216,22 +220,30 @@ namespace GE {
 
 	// Update method which updates the game logic
 	void GameEngine::update() {
+		// Calculations for the deltaTime to run things consistently
 		Uint32 now = SDL_GetTicks();
 		float deltaTime = (now - lastTicks) / 1000.0f;	// Seconds
 
 		lastTicks = now;
 
+		// Calculations for the frames per second counter
+		frameCount++;
+
+		if (now - fpsLastTime > 1000) {
+			currentFPS = frameCount;
+			frameCount = 0;
+			fpsLastTime = now;
+
+			fpsText = "FPS: " + std::to_string(currentFPS);
+		}
+
+		// Changing between camera views
 		if (thirdPerson) {
 			thirdCam->update(deltaTime, keyStates);
 		}
 		else {
 			fpsCam->update(deltaTime, keyStates);
 		}
-
-		// Do something for each entity in the vector
-		/*for (int i = 0; i < loadedEntities.size(); i++) {
-
-		}*/
 
 		// Moving the dynamic model
 		glm::vec3 orbPos = orb->getTransform().getPosition();
@@ -284,6 +296,8 @@ namespace GE {
 		else {
 			fontFT->RenderText("[ FREE-ROAM CAMERA ]", 48, h - 48, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 		}
+
+		fontFT->RenderText(fpsText, w - 96, h - 48, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
 		SDL_GL_SwapWindow(window);
 	}
