@@ -22,7 +22,7 @@ The game scene will be a forest that encourages exploration and presents the pla
 
 ### 60-69%
 - Instancing (trees, rocks)
-- HUD (showing current camera mode, FPS, camera/player position, camera/player rotation, objects loaded)
+- HUD (current camera mode, FPS, camera/player position, camera/player rotation, objects loaded, nearest object, num of vertices, num of triangles)
 
 ## Future Features
 ### 50-59% (Optional)
