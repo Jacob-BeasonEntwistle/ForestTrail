@@ -6,24 +6,34 @@
 #include "Texture.h"
 
 namespace GE {
-	// 1. Define a structure for the instance data
+	// Structure for the instance data
 	struct InstancePosRotScale {
 		float posX, posY, posZ;
 		float rotX, rotY, rotZ;
 		float scaleX, scaleY, scaleZ;
 	};
 
-	class InstancedRenderer
+	class InstanceRenderer
 	{
 	public:
-		InstancedRenderer();
-		~InstancedRenderer();
+		InstanceRenderer();
+		~InstanceRenderer();
 
 		void init();
 
+		void drawInstanced(Camera* cam, Model* m);
+
 		void destroy();
 
-		void drawInstanced(Camera* cam, Model* m);
+		float randomFloat(float min, float max);
+
+		InstancePosRotScale getRandomPos(
+			float minX, float maxX,
+			float minY, float maxY,
+			float minZ, float maxZ,
+			float minX2, float maxX2,
+			float minScale = 1.0f, float maxScale = 1.0f
+		);
 
 		void setInstanceData(const std::vector<InstancePosRotScale>& instances);
 		

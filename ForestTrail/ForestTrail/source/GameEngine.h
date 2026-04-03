@@ -14,7 +14,7 @@
 #include "SkyboxRenderer.h"
 #include "Entity.h"
 #include "FontRendererFT.h"
-#include "InstancedRenderer.h"
+#include "InstanceRenderer.h"
 
 namespace GE {
 	class GameEngine {
@@ -106,8 +106,9 @@ namespace GE {
 		// FontRendererFT object variable
 		FontRendererFT* fontFT;
 
-		// InstancedRenderer object variable
-		InstancedRenderer* ir;
+		// InstanceRenderer object variable
+		InstanceRenderer* treeIr;
+		InstanceRenderer* rockIr;
 	};
 
 	// Helper function

@@ -54,7 +54,7 @@
     <ClInclude Include="source\FontRendererFT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\InstancedRenderer.h">
+    <ClInclude Include="source\InstanceRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -86,7 +86,7 @@
     <ClCompile Include="source\FontRendererFT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\InstancedRenderer.cpp">
+    <ClCompile Include="source\InstanceRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

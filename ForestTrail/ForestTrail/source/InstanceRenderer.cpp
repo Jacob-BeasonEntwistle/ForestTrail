@@ -1,18 +1,18 @@
-#include "InstancedRenderer.h"
+#include "InstanceRenderer.h"
 #include "ShaderUtils.h"
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace GE {
-	InstancedRenderer::InstancedRenderer() {
+	InstanceRenderer::InstanceRenderer() {
 		tex = nullptr;
 	}
 
-	InstancedRenderer::~InstancedRenderer() {
+	InstanceRenderer::~InstanceRenderer() {
 
 	}
 
-	void InstancedRenderer::init()
+	void InstanceRenderer::init()
 	{
 		// New! Load shader source from files.  Need the new ShaderUtils files
 		std::string v_shader_source = loadShaderSourceCode("./shaders/instance.vert");
@@ -60,7 +60,7 @@ namespace GE {
 		samplerId = glGetUniformLocation(programId, "sampler");
 	}
 
-	void InstancedRenderer::setInstanceData(const std::vector<InstancePosRotScale>& instances) {
+	void InstanceRenderer::setInstanceData(const std::vector<InstancePosRotScale>& instances) {
 		// 3. Create a vector to store the transformation matrices
 		std::vector<glm::mat4> instance_matrices;
 
@@ -93,7 +93,7 @@ namespace GE {
 	}
 
 	// Draw objects using instancing
-	void InstancedRenderer::drawInstanced(Camera* cam, Model* m) {
+	void InstanceRenderer::drawInstanced(Camera* cam, Model* m) {
 		// Enable back face culling by enabling face culling
 		// Note that back face culling is the default culling
 		// Change cull type with glCullFace() and pass either
@@ -164,7 +164,7 @@ namespace GE {
 		glUniform1i(samplerId, 0);
 
 		if (!tex) {
-			std::cerr << "InstancedRenderer: texture not set!" << std::endl;
+			std::cerr << "InstanceRenderer: texture not set!" << std::endl;
 			return;
 		}
 
@@ -196,13 +196,53 @@ namespace GE {
 		glDisable(GL_CULL_FACE);
 	}
 
+	float InstanceRenderer::randomFloat(float min, float max) {
+		// rand gives int between 0 and RAND_MAX
+		// Dividing by RAND_MAX normalizes it to [0.0, 1.0]
+		// Multiply it by the range size (e.g. (-30) - (-50) = 20)
+		// Then add the minimum to shift it into the correct range
+		return min + static_cast<float>(rand()) / RAND_MAX * (max - min);
+	}
+
+	InstancePosRotScale InstanceRenderer::getRandomPos(
+		float minX, float maxX,
+		float minY, float maxY,
+		float minZ, float maxZ,
+		float minX2, float maxX2,
+		float minScale, float maxScale
+	) {
+		// Pick a side at random, either left (0) or right (1)
+		int side = rand() % 2;
+
+		// Temporary float variable for pos on x axis
+		float x;
+
+		// If the side chosen is the left set x pos on the left
+		if (side == 0) {
+			x = randomFloat(minX, maxX);
+		}
+		// If the side chosen is the right set x pos on the right
+		else {
+			x = randomFloat(minX2, maxX2);
+		}
+
+		float y = randomFloat(minY, maxY);
+
+		// Randomise the z pos for each tree
+		float z = randomFloat(minZ, maxZ);
+		// Randomise the scale of the tree between 0.65 and 1.3
+		float scale = randomFloat(minScale, maxScale);
+
+		// Create an instance of the tree with the randomised coordinates and scale
+		return InstancePosRotScale{ x, y, z, 0.0f, 0.0f, 0.0f, scale, scale, scale };
+	}
+
 	// Release objects allocated for program and vertex buffer object
-	void InstancedRenderer::destroy()
+	void InstanceRenderer::destroy()
 	{
-		// 13. Delete the instance buffer when finished
+		// Delete the instance buffer when finished
 		glDeleteBuffers(1, &instanceMatrixBuffer);
 
 		glDeleteProgram(programId);
 	}
-
 }

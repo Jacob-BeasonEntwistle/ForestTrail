@@ -84,7 +84,7 @@ namespace GE {
 		cam = new Camera(glm::vec3(0.0f, 8.0f, 15.0f),	// Position
 			glm::vec3(0.0f, 0.0f, 20.0f) + dist,	// Look at
 			glm::vec3(0.0f, 1.0f, 0.0f),	// Up direction
-			FOV, w / h, 0.1f, 100.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
+			FOV, w / h, 0.1f, 150.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
 
 		// Create the TriangleRenderer object for the terrain
 		triangle = new TriangleRenderer();
@@ -149,18 +149,37 @@ namespace GE {
 		fontFT = new FontRendererFT();
 		fontFT->init();
 
-		ir = new InstancedRenderer();
-		ir->init();
-		ir->setTexture(tex);
+		treeIr = new InstanceRenderer();
+		treeIr->init();
+		treeIr->setTexture(tex);
 
-		std::vector<InstancePosRotScale> instances;
+		rockIr = new InstanceRenderer();
+		rockIr->init();
+		rockIr->setTexture(tex);
 
+		std::vector<InstancePosRotScale> treeInstances;
+		std::vector<InstancePosRotScale> rockInstances;
+
+		// Seed the random number generator
+		srand(time(0));
+
+		// However many trees are required
 		const int num_trees = 30;
+		// For loop to loop through all required trees
 		for (int count = 0; count < num_trees; count++) {
-			instances.push_back(InstancePosRotScale{ count * 3.0f, 0.0f, count * 3.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f });
+			InstancePosRotScale treeInst = treeIr->getRandomPos(-60.0f, -20.0f, 0.0f, 0.0f, -60.0f, 60.0f, 20.0f, 60.0f, 0.8f, 1.3f);
+			treeInstances.push_back(treeInst);
 		}
 
-		ir->setInstanceData(instances);
+		treeIr->setInstanceData(treeInstances);
+
+		const int num_rocks = 20;
+		for (int count = 0; count < num_rocks; count++) {
+			InstancePosRotScale rockInst = rockIr->getRandomPos(-60.0f, 0.0f, 0.0f, 0.0f, -60.0f, 60.0f, 0.0f, 60.0f, 0.3f, 1.5f);
+			rockInstances.push_back(rockInst);
+		}
+
+		rockIr->setInstanceData(rockInstances);
 
 		// Initialise values for deltaTime & FPS counter
 		lastTicks = SDL_GetTicks();
@@ -299,7 +318,8 @@ namespace GE {
 
 		// --[NORMAL OBJECTS]--
 		// Draw instances of the tree model
-		ir->drawInstanced(cam, tree->getModel());
+		treeIr->drawInstanced(cam, tree->getModel());
+		rockIr->drawInstanced(cam, rock->getModel());
 
 		// Render the terrain (two triangles making up a quad)
 		triangle->draw(cam);
@@ -347,6 +367,16 @@ namespace GE {
 
 		if (fontFT != nullptr) {
 			delete fontFT;
+		}
+
+		if (treeIr != nullptr) {
+			treeIr->destroy();
+			delete treeIr;
+		}
+		
+		if (rockIr != nullptr) {
+			rockIr->destroy();
+			delete rockIr;
 		}
 
 		skybox->destroy();
