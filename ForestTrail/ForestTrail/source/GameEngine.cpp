@@ -86,10 +86,10 @@ namespace GE {
 			glm::vec3(0.0f, 1.0f, 0.0f),	// Up direction
 			FOV, w / h, 0.1f, 100.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
 
-		// Create the TriangleRenderer object
+		// Create the TriangleRenderer object for the terrain
 		triangle = new TriangleRenderer();
 
-		// Initialise the terrain
+		// Initialise the terrain (two triangles)
 		triangle->init();
 		
 		triangle->setPos(0.0f, 0.0f, 0.0f);
@@ -131,12 +131,13 @@ namespace GE {
 		sign->getTransform().setPosition(-2.0f, -1.0f, 3.0f);
 		crate->getTransform().setPosition(-14.0f, 0.0f, -4.0f);
 		fence->getTransform().setPosition(10.0f, 0.0f, -10.0f);
+		fence->getTransform().setScale(0.8f, 0.8f, 0.8f);
 		tree->getTransform().setPosition(9.0f, 0.0f, -12.0f);
 		podium->getTransform().setPosition(-8.0f, 0.0f, 7.0f);
 		orb->getTransform().setPosition(-8.0f, 0.0f, 7.0f);
 		hedgehog->getTransform().setPosition(20.0f, 0.0f, 20.0f);
 
-		player->getTransform().setPosition(0.0f, 4.0f, 15.0f);
+		player->getTransform().setPosition(0.0f, 2.0f, 15.0f);
 
 		std::string skyboxPath = "./textures/skybox_textures/skybox";
 		skybox = new SkyboxRenderer(skyboxPath + "_front.png", skyboxPath + "_back.png", skyboxPath + "_right.png", skyboxPath + "_left.png", skyboxPath + "_top.png", skyboxPath + "_bottom.png");
@@ -148,6 +149,20 @@ namespace GE {
 		fontFT = new FontRendererFT();
 		fontFT->init();
 
+		ir = new InstancedRenderer();
+		ir->init();
+		ir->setTexture(tex);
+
+		std::vector<InstancePosRotScale> instances;
+
+		const int num_trees = 30;
+		for (int count = 0; count < num_trees; count++) {
+			instances.push_back(InstancePosRotScale{ count * 3.0f, 0.0f, count * 3.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f });
+		}
+
+		ir->setInstanceData(instances);
+
+		// Initialise values for deltaTime & FPS counter
 		lastTicks = SDL_GetTicks();
 		
 		fpsLastTime = SDL_GetTicks();
@@ -278,10 +293,15 @@ namespace GE {
 		glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// --[BACKGROUND OBJECTS]--
 		// Render skybox first because it should be drawn behind everything
 		skybox->draw(cam);
 
-		// Render the triangle
+		// --[NORMAL OBJECTS]--
+		// Draw instances of the tree model
+		ir->drawInstanced(cam, tree->getModel());
+
+		// Render the terrain (two triangles making up a quad)
 		triangle->draw(cam);
 
 		// Draw each entity in the vector of loaded entities

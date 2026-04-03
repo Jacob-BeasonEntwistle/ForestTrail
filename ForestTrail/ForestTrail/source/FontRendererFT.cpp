@@ -163,8 +163,8 @@ namespace GE {
     void FontRendererFT::setupShaders()
     {
         // New! Load shader source from files.  Need the new ShaderUtils files
-        std::string v_shader_source = loadShaderSourceCode("fontrenderft.vert");
-        std::string f_shader_source = loadShaderSourceCode("fontrenderft.frag");
+        std::string v_shader_source = loadShaderSourceCode("./shaders/fontrenderft.vert");
+        std::string f_shader_source = loadShaderSourceCode("./shaders/fontrenderft.frag");
 
         // Due to the unique way OpenGL handles shader source, OpenGL expects
         // an array of strings.  In this case, create an array of the

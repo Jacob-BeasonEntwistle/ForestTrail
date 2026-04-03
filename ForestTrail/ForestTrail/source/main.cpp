@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 			std::ostringstream msg;
 
 			// Create message based on the value in frame_count
-			msg << "FPS: " << frame_count;
+			msg << "Forest Trail | FPS: " << frame_count;
 
 			// Display the message in the window title
 			ge.setWindowTitle(msg.str().c_str());
