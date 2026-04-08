@@ -65,6 +65,13 @@ namespace GE {
 		// Stats toggle
 		bool showStats = false;
 
+		// [Stats variables]
+		int numOfEntities = 0;
+		int numOfTrees = 0;
+		int numOfRocks = 0;
+		int totalVertices = 0;
+		int totalTriangles = 0;
+
 		// Camera controllers
 		FPSCameraController* fpsCam = nullptr;
 		ThirdPersonController* thirdCam = nullptr;

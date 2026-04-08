@@ -56,14 +56,34 @@ The game scene will be a forest that encourages exploration and presents the pla
 - TAB to toggle camera mode
 - F1 to open debug stats
 
+---
+
 ## Code Profiling
-05/03/2026 - 5 models, 1 dynamic model, flat terrain, camera movement
+### [08/04/2026 - After optimising drawing UI stats]
+- **FPS**: ~42 FPS
+- **ge.init()**: 856ms
+- **ge.update()**: ~0.35ms average
+- **ge.draw()**: ~23.36ms average
+
+**Improvement:** -0.31ms
+
+### [08/04/2026 - 5 models, 1 dynamic model, instanced models, flat terrain, UI elements]
+- **FPS**: ~42 FPS
+- **ge.init()**: 644ms
+- **ge.update()**: ~0.30ms average
+- **ge.draw()**: ~23.67ms average*
+
+*Measured across five runs: 28.74ms, 23.96ms, 23.76ms, 23.23ms, 23.43ms
+
+Draw function is the bottleneck - limits performance. Requires some optimisation to reduce time taken for call.
+
+### [05/03/2026 - 5 models, 1 dynamic model, flat terrain, camera movement]
 - Runtime performance: ~41 FPS (home machine)
-- Game Engine Initialisation: ~745 average*
+- Game Engine Initialisation: ~745ms average*
 
 *Measured across five runs: 1292ms, 688ms, 582ms, 592ms, 571ms
 
-09/02/2026 - empty scene with flat terrain
+### [09/02/2026 - empty scene with flat terrain]
 - Runtime performance: ~41 FPS (home machine)
 - Game Engine Initialisation: ~432ms average*
 

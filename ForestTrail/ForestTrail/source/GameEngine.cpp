@@ -2,6 +2,8 @@
 #include <iostream>
 #include <iomanip>
 #include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
 
 namespace GE {
 	GameEngine::GameEngine() {
@@ -189,6 +191,22 @@ namespace GE {
 
 		rockIr->setInstanceData(rockInstances);
 
+		// --[Constant stats values]--
+		// Getting the number of entities and instanced objects
+		numOfEntities = loadedEntities.size();
+		numOfTrees = num_trees;
+		numOfRocks = num_rocks;
+		 
+		// Sum vertices for entities
+		for (auto& e : loadedEntities) {
+			totalVertices += e->getModel()->getNumVertices();
+		}
+		// Include instanced models in the vertices count
+		totalVertices += tree->getModel()->getNumVertices() * num_trees;
+		totalVertices += rock->getModel()->getNumVertices() * num_rocks;
+		// Calculate triangles
+		totalTriangles = totalVertices / 3;
+
 		// Initialise values for deltaTime & FPS counter
 		lastTicks = SDL_GetTicks();
 		
@@ -353,174 +371,110 @@ namespace GE {
 		// --[UI ELEMENTS]--
 		// Show game statistics
 		if (showStats) {
-			// Creating a stringstream that allows for 2 dp
-			std::stringstream ss;
-			ss << std::fixed << std::setprecision(2);
-
 			// --[DEBUGGING LIST]--
-			fontFT->RenderText("---DEBUG STATS---", w - 144, h - 24, 0.35, glm::vec3(1.0f, 1.0f, 1.0f));
-			// Rendering the FPS text
-			fontFT->RenderText(fpsText, w - 144, h - 48, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
+			int lineHeight = 20;
+			int startX = w - 144;
+			int startY = h - 24;
 
-			// Getting the number of entities and instanced objects
-			int numOfEntities = loadedEntities.size();
-			int treeCount = treeIr->getInstanceCount();
-			int rockCount = rockIr->getInstanceCount();
-			// Rendering the number of entities and instanced objects
-			fontFT->RenderText("Entities: " + std::to_string(numOfEntities), w - 144, h - 72, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-			fontFT->RenderText("Trees: " + std::to_string(treeCount), w - 144, h - 96, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-			fontFT->RenderText("Rocks: " + std::to_string(rockCount), w - 144, h - 120, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
+			fontFT->RenderText("---DEBUG STATS---", startX, startY, 0.35f, glm::vec3(1.0f));
+			fontFT->RenderText(fpsText, startX, startY - lineHeight, 0.35f, glm::vec3(1.0f));
+			fontFT->RenderText("Entities: " + std::to_string(numOfEntities), startX, startY - lineHeight * 2, 0.35f, glm::vec3(1.0f));
+			fontFT->RenderText("Trees: " + std::to_string(numOfTrees), startX, startY - lineHeight * 3, 0.35f, glm::vec3(1.0f));
+			fontFT->RenderText("Rocks: " + std::to_string(numOfRocks), startX, startY - lineHeight * 4, 0.35f, glm::vec3(1.0f));
+			fontFT->RenderText("Vertices: " + std::to_string(totalVertices), startX, startY - lineHeight * 5, 0.35f, glm::vec3(1.0f));
+			fontFT->RenderText("Triangles: " + std::to_string(totalTriangles), startX, startY - lineHeight * 6, 0.35f, glm::vec3(1.0f));
 
-			int totalVertices = 0;
-			// Sum vertices for entities
-			for (auto& e : loadedEntities) {
-				totalVertices += e->getModel()->getNumVertices();
-			}
 
-			// Include instanced models in the vertices count
-			totalVertices += tree->getModel()->getNumVertices() * treeCount;
-			totalVertices += rock->getModel()->getNumVertices() * rockCount;
+			// --[STATES LIST]--
+			// State, Nearest, Position (Bottom left)
+			int bottomX = 24;
+			int bottomY = 120;
 
-			// Calculate triangles
-			int totalTriangles = totalVertices / 3;
+			// Inline if statement to compact code
+			fontFT->RenderText((thirdPerson) ? "\nState: Grounded" : "\nState: Airborne", bottomX, bottomY, 0.35f, glm::vec3(1.0f));
 
-			// Format numbers with commas
-			ss.imbue(std::locale(""));
-			ss << totalVertices;
-			fontFT->RenderText("Vertices: " + ss.str(), w - 144, h - 144, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-			
-			ss.str("");
-			ss.clear();
-
-			ss << totalTriangles;
-			fontFT->RenderText("Triangles: " + ss.str(), w - 144, h - 168, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-			ss.str("");
-			ss.clear();
-			ss.imbue(std::locale::classic());
-
-			if (thirdPerson) {
-				fontFT->RenderText("State: Grounded", 24, 120, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-			}
-			else {
-				fontFT->RenderText("State: Airborne", 24, 120, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-			}
-
+			// Update nearest entity/object every 300ms
+			static Uint32 lastNearestUpdate = 0;	// Static variable meaning it won't get reset every frame
+			static float closestDist = INFINITY;
 			Entity* closest = nullptr;
-			std::string closestName = "None";
-			float closestDist = INFINITY;
+			static std::string closestName = "None";
 
-			// Check for nearest entity
-			for (auto& e : loadedEntities) {
-				float dist;
+			const Uint32 refreshInterval = 300;
+
+			Uint32 now = SDL_GetTicks();
+			if (now - lastNearestUpdate > refreshInterval) {
+				lastNearestUpdate = now;
+
+				closestDist = INFINITY;
+				closest = nullptr;
+				closestName = "None";
 
 				// Account for current camera mode
-				if (!thirdPerson) {
-					dist = glm::distance(cam->getPos(), e->getTransform().getPosition());
+				glm::vec3 viewCameraPos = !thirdPerson ? cam->getPos() : player->getTransform().getPosition();
+
+				// Check for nearest entity
+				for (auto& e : loadedEntities) {
+					float dist = glm::length2(viewCameraPos - e->getTransform().getPosition());
+
+					if (dist < closestDist) {
+						closestDist = dist;
+						closest = e;
+						closestName = e->getName();
+					}
 				}
-				else {
-					dist = glm::distance(player->getTransform().getPosition(), e->getTransform().getPosition());
+				// Check for nearest tree instance
+				for (auto& inst : treeInstances) {
+					glm::vec3 instPos(inst.posX, inst.posY, inst.posZ);
+					float dist = glm::length2(viewCameraPos - instPos);
+
+					if (dist < closestDist) {
+						closestDist = dist;
+						closestName = "Tree";
+						closest = nullptr;
+					}
+				}
+				// Check for nearest rock instance
+				for (auto& inst : rockInstances) {
+					glm::vec3 instPos(inst.posX, inst.posY, inst.posZ);
+					float dist = glm::length2(viewCameraPos - instPos);
+
+					if (dist < closestDist) {
+						closestDist = dist;
+						closestName = "Rock";
+						closest = nullptr;
+					}
 				}
 
-				if (dist < closestDist) {
-					closestDist = dist;
-					closest = e;
-					closestName = e->getName();
-				}
+				closestDist = round(sqrt(closestDist) * 100) / 100;
 			}
-			// Check for nearest tree instance
-			for (auto& inst : treeInstances) {
-				glm::vec3 instPos(inst.posX, inst.posY, inst.posZ);
-				float dist;
-
-				if (!thirdPerson) {
-					dist = glm::distance(cam->getPos(), instPos);
-				}
-				else {
-					dist = glm::distance(player->getTransform().getPosition(), instPos);
-				}
-				
-				if (dist < closestDist) {
-					closestDist = dist;
-					closestName = "Tree";
-					closest = nullptr;
-				}
-			}
-			// Check for nearest rock instance
-			for (auto& inst : rockInstances) {
-				glm::vec3 instPos(inst.posX, inst.posY, inst.posZ);
-				float dist;
-
-				if (!thirdPerson) {
-					dist = glm::distance(cam->getPos(), instPos);
-				}
-				else {
-					dist = glm::distance(player->getTransform().getPosition(), instPos);
-				}
-
-				if (dist < closestDist) {
-					closestDist = dist;
-					closestName = "Rock";
-					closest = nullptr;
-				}
-			}
-
-			ss << closestDist;
-
 			// Display the closest entity/object
 			if (closestDist < 15.0f) {
-				fontFT->RenderText("Nearby: " + closestName + " (" + ss.str() + ")", 24, 72, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
+				fontFT->RenderText("Nearby: " + closestName + " (" + std::to_string(closestDist) + ")", bottomX, bottomY - lineHeight, 0.35f, glm::vec3(1.0f));
 			}
 			else {
-				fontFT->RenderText("Nearby: None", 24, 72, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
+				fontFT->RenderText("Nearby: None", bottomX, bottomY - lineHeight, 0.35f, glm::vec3(1.0f));
 			}
+
+			std::string posText = "Position: (0, 0, 0)";
+			std::string rotText = "Pitch: 0, Yaw: 0";
+
+			glm::vec3 pos = thirdPerson ? player->getTransform().getPosition() : cam->getPos();
+
+			std::stringstream ss;
+			ss << std::fixed << std::setprecision(2);
+			ss << "Current Position: (" << pos.x << ", " << pos.y << ", " << pos.z << ")";
+			posText = ss.str();
+
+			float pitch = cam->getPitch();
+			float yaw = thirdPerson ? player->getTransform().getRotation().y : cam->getYaw();
 
 			ss.str("");
 			ss.clear();
-			ss.imbue(std::locale(""));
+			ss << "Pitch: " << pitch << ", Yaw: " << yaw;
+			rotText = ss.str();
 
-			// If the game is in third person, the position/rotation is displayed based off the player pos
-			if (thirdPerson) {
-				glm::vec3 pos = player->getTransform().getPosition();
-				ss << "Current Position: ( " 
-					<< pos.x << ", " 
-					<< pos.y << ", " 
-					<< pos.z << " )";
-
-				fontFT->RenderText(ss.str(), 24, 48, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-				ss.str("");
-				ss.clear();
-
-				float pitch = cam->getPitch();
-				float yaw = player->getTransform().getRotation().y;
-				ss << "Pitch: " << pitch << ", Yaw: " << yaw;
-
-				fontFT->RenderText(ss.str(), 24, 24, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-			}
-			// If the game is in other camera modes, the position/rotation is displayed based off the camera pos
-			else {
-				glm::vec3 pos = cam->getPos();
-				ss << "Current Position: ( "
-					<< pos.x << ", "
-					<< pos.y << ", "
-					<< pos.z << " )";
-
-				fontFT->RenderText(ss.str(), 24, 48, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-				ss.str("");
-				ss.clear();
-
-				float pitch = cam->getPitch();
-				float yaw = cam->getYaw();
-				ss << "Pitch: " << pitch << ", Yaw: " << yaw;
-
-				fontFT->RenderText(ss.str(), 24, 24, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f));
-			}
-
-			ss.str("");
-			ss.clear();
-			ss.imbue(std::locale::classic());
+			fontFT->RenderText(posText, bottomX, bottomY - lineHeight * 2, 0.35f, glm::vec3(1.0f));
+			fontFT->RenderText(rotText, bottomX, bottomY - lineHeight * 3, 0.35f, glm::vec3(1.0f));
 		}
 		else {
 			// Rendering the FPS text
