@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(ProjDir)externals\glm;$(ProjDir)externals\assimp\include;$(ProjDir)externals\SDL2_image\include;$(ProjDir)externals\freetype\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\x64;$(ProjDir)externals\assimp\lib\x64;$(ProjDir)externals\SDL2_image\lib\x64;$(ProjDir)externals\freetype\win64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath);$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\x64;$(ProjDir)externals\assimp\lib\x64;$(ProjDir)externals\SDL2_image\lib\x64;$(ProjDir)externals\freetype\win64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(ProjDir)externals\glm;$(ProjDir)externals\assimp\include;$(ProjDir)externals\SDL2_image\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\x64;$(ProjDir)externals\assimp\lib\x64;$(ProjDir)externals\SDL2_image\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjDir)externals\SDL2\include;$(ProjDir)externals\glew\include;$(ProjDir)externals\glm;$(ProjDir)externals\assimp\include;$(ProjDir)externals\SDL2_image\include;$(ProjDir)externals\freetype\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath);$(ProjDir)externals\SDL2\lib\x64;$(ProjDir)externals\glew\lib\x64;$(ProjDir)externals\assimp\lib\x64;$(ProjDir)externals\SDL2_image\lib\x64;$(ProjDir)externals\freetype\win64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,11 +110,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc142-mtd.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shell32.lib;opengl32.lib;glew32.lib;assimp-vc142-mtd.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;freetype.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,11 +127,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;assimp-vc142-mtd.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shell32.lib;opengl32.lib;glew32.lib;assimp-vc142-mtd.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;freetype.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

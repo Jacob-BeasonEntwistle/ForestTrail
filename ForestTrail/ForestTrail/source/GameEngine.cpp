@@ -120,7 +120,7 @@ namespace GE {
 		crate->setName("Crate");
 		fence->setName("Fence");
 		tree->setName("Tree");
-		podium->setName("POI - Orb");
+		podium->setName("POI - Podium");
 		orb->setName("POI - Orb");
 		hedgehog->setName("Hedgehog");
 
@@ -175,7 +175,7 @@ namespace GE {
 		const int num_trees = 30;
 		// For loop to loop through all required trees
 		for (int count = 0; count < num_trees; count++) {
-			InstancePosRotScale treeInst = treeIr->getRandomPos(-60.0f, -20.0f, 0.0f, 0.0f, -60.0f, 60.0f, 20.0f, 60.0f, 0.8f, 1.3f);
+			InstancePosRotScale treeInst = treeIr->setRandomPos(-60.0f, -20.0f, 0.0f, 0.0f, -60.0f, 60.0f, 20.0f, 60.0f, 0.8f, 1.3f);
 			treeInstances.push_back(treeInst);
 		}
 
@@ -183,7 +183,7 @@ namespace GE {
 
 		const int num_rocks = 20;
 		for (int count = 0; count < num_rocks; count++) {
-			InstancePosRotScale rockInst = rockIr->getRandomPos(-60.0f, 0.0f, 0.0f, 0.0f, -60.0f, 60.0f, 0.0f, 60.0f, 0.3f, 1.5f);
+			InstancePosRotScale rockInst = rockIr->setRandomPos(-60.0f, 0.0f, 0.0f, 0.0f, -60.0f, 60.0f, 0.0f, 60.0f, 0.3f, 1.5f);
 			rockInstances.push_back(rockInst);
 		}
 

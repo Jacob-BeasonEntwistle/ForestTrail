@@ -7,12 +7,10 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-// 1. Add the freetype library
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 namespace GE {
-	// 2.
 	struct Character {
 		GLuint TextureID;	// ID handle of the glyph texture
 		std::array<int, 2> Size;	// Size of glyph
@@ -32,16 +30,14 @@ namespace GE {
 	private:
 		void setupShaders();
 
-		// 3. Define a map associative data structure
-		// so we can map a character code with a Character struct
-		// that way we can get a character from the text to render
-		// and find the corresponding Character
+		// Define a map associative data structure to map a character code with a Character struct 
+		// - get a character from the text to render and find the corresponding Character
 		std::map<char, Character> charactersMap;
 
-		// 4. Vertex buffer
+		// Vertex buffer
 		GLuint vbo;
 
-		// 5. Ids for shader uniforms and sampler
+		// Ids for shader uniforms and sampler
 		GLuint vertexLocation;
 		GLuint programId;
 		GLuint projMatId;

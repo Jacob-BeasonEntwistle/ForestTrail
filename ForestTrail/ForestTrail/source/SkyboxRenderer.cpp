@@ -153,39 +153,17 @@ namespace GE {
 	}
 
 	void SkyboxRenderer::createSkyboxProgram() {
-		// Vertex shader code
-		const GLchar* V_ShaderCode[] = {
-			"#version 410\n"
-			"in vec3 vertexPos3D;\n"
-			"out vec3 texCoord;\n"
-			"uniform mat4 viewMat;\n"
-			"uniform mat4 projMat;\n"
-			"void main() {\n"
-			"vec4 v = vec4(vertexPos3D.xyz, 1);\n"
-			"v = projMat * viewMat * v;\n"
-			"gl_Position = v;\n"
-			"texCoord = vertexPos3D;\n"
-			"}\n"
-		};
+		// Load shader code from files using the ShaderUtils class
+		std::string v_shader_source = loadShaderSourceCode("./shaders/skybox.vert");
+		std::string f_shader_source = loadShaderSourceCode("./shaders/skybox.frag");
 
-		// Fragment shader code
-		const GLchar* F_ShaderCode[] = {
-			"#version 410\n"
-			"in vec3 texCoord;\n"
-			"uniform samplerCube sampler;\n"
-			"out vec4 fragmentColour;\n"
-			"void main() {\n"
-			"fragmentColour = vec4(texture(sampler, texCoord).rgb, 1.0f);\n"
-			"}\n"
-		};
+		// OpenGL expects an array of strings, create an array of the loaded source code
+		const GLchar* v_source_array[] = { v_shader_source.c_str() };
+		const GLchar* f_source_array[] = { f_shader_source.c_str() };
 
-		bool result = compileProgram(V_ShaderCode, F_ShaderCode, &skyboxProgramId);
-
-		// Check result
-		if (!result) {
-			std::cerr << "Failed to create SkyboxRenderer program." << std::endl;
-
-			return;
+		// Compile shaders into a program
+		if (!compileProgram(v_source_array, f_source_array, &skyboxProgramId)) {
+			std::cerr << "Problem building instancing program.  Check console log for more information." << std::endl;
 		}
 
 		// Now get a link to the vertexPos3D so the attribute can be linked to the vertices when rendering

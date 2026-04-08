@@ -27,7 +27,7 @@ namespace GE {
 
 		float randomFloat(float min, float max);
 
-		InstancePosRotScale getRandomPos(
+		InstancePosRotScale setRandomPos(
 			float minX, float maxX,
 			float minY, float maxY,
 			float minZ, float maxZ,
@@ -58,6 +58,9 @@ namespace GE {
 		// and passes to fColour for fragment shader
 		GLint vertexUVLocation;
 
+		// Link to normal attribute
+		GLint vertexNormal;
+
 		// Link instance matrix attribute
 		GLint instanceMatLocation;
 
@@ -66,6 +69,10 @@ namespace GE {
 		GLuint viewUniformId;
 		GLuint projectionUniformId;
 		GLuint samplerId;
+		// For camera position
+		GLuint viewPosId;
+		// For light colour
+		GLuint lightColourId;
 
 		int numInstances;
 

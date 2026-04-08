@@ -14,59 +14,61 @@ namespace GE {
 
 	void InstanceRenderer::init()
 	{
-		// New! Load shader source from files.  Need the new ShaderUtils files
+		// Load shader code from files using the ShaderUtils class
 		std::string v_shader_source = loadShaderSourceCode("./shaders/instance.vert");
 		std::string f_shader_source = loadShaderSourceCode("./shaders/instance.frag");
 
-		// Due to the unique way OpenGL handles shader source, OpenGL expects
-		// an array of strings.  In this case, create an array of the
-		// loaded source code strings and pass to compileProgram for compilation
+		// OpenGL expects an array of strings, create an array of the loaded source code
 		const GLchar* v_source_array[] = { v_shader_source.c_str() };
 		const GLchar* f_source_array[] = { f_shader_source.c_str() };
 
 		// Compile shaders into a program
 		if (!compileProgram(v_source_array, f_source_array, &programId)) {
-			std::cerr << "Problem building billboard program.  Check console log for more information." << std::endl;
+			std::cerr << "Problem building instancing program.  Check console log for more information." << std::endl;
 		}
 
-		// Now get a link to the vertexPos3D so we can link the attribute
-		// to our vertices when rendering
+		// Link to the vertexPos3D
 		vertexLocation = glGetAttribLocation(programId, "vertexPos3D");
-
 		// Check for errors
 		if (vertexLocation == -1) {
 			std::cerr << "Problem getting vertex3DPos" << std::endl;
 		}
 
+		// Link to vUVs
 		vertexUVLocation = glGetAttribLocation(programId, "vUV");
-
 		// Check for errors
 		if (vertexUVLocation == -1) {
 			std::cerr << "Problem getting vUV" << std::endl;
 		}
 
-		// 2. Get the location of the instance attribute
-		// which is the transformation matrix.  
-		instanceMatLocation = glGetAttribLocation(programId, "instance_transform_mat");
+		// Link to the normal attribute
+		vertexNormal = glGetAttribLocation(programId, "vertexNormal");
+		// Check for errors
+		if (vertexNormal == -1) {
+			std::cerr << "Problem getting vertexNormal" << std::endl;
+		}
 
+		// Get location of the instance attribute which is the transformation matrix  
+		instanceMatLocation = glGetAttribLocation(programId, "instance_transform_mat");
 		// Check for errors
 		if (instanceMatLocation == -1) {
 			std::cerr << "Problem getting instance_transform_mat";
 		}
 
 		// Link the uniforms to the member fields
-		viewUniformId = glGetUniformLocation(programId, "view");
-		projectionUniformId = glGetUniformLocation(programId, "projection");
+		viewUniformId = glGetUniformLocation(programId, "viewMat");
+		projectionUniformId = glGetUniformLocation(programId, "projMat");
 		samplerId = glGetUniformLocation(programId, "sampler");
+		viewPosId = glGetUniformLocation(programId, "viewPos");
+		lightColourId = glGetUniformLocation(programId, "lightColour");
 	}
 
 	void InstanceRenderer::setInstanceData(const std::vector<InstancePosRotScale>& instances) {
-		// 3. Create a vector to store the transformation matrices
+		// Vector to store the transformation matrices
 		std::vector<glm::mat4> instance_matrices;
 
-		// 4. Process the location, rotation and scales from instances vector
-		// calculating the corresponding transformation matrix and insert
-		// into vector
+		// Process each location, rotation and scales from instances calculating 
+		// corresponding transformation matrix and insert into vector
 		for (auto& iprs : instances) {
 			// Calculate the transformation matrix for the object.  Start with the identity matrix
 			glm::mat4 instanceMat = glm::mat4(1.0f);
@@ -81,11 +83,10 @@ namespace GE {
 			instance_matrices.push_back(instanceMat);
 		}
 
-		// Store the number of instances as need that number in
-		// draw method
+		// Store the number of instances as need that number in draw method
 		numInstances = instance_matrices.size();
 
-		// 5. Setup input of an array of matrix which define the position of each instance
+		// Setup input of an array of matrix which define the position of each instance
 		glGenBuffers(1, &instanceMatrixBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
 		glBufferData(GL_ARRAY_BUFFER, instance_matrices.size() * sizeof(glm::mat4), instance_matrices.data(), GL_STATIC_DRAW);
@@ -94,10 +95,7 @@ namespace GE {
 
 	// Draw objects using instancing
 	void InstanceRenderer::drawInstanced(Camera* cam, Model* m) {
-		// Enable back face culling by enabling face culling
-		// Note that back face culling is the default culling
-		// Change cull type with glCullFace() and pass either
-		// GL_FRONT, GL_BACK or GL_FRONT_AND_BACK
+		// Enable back face culling (other culling types: GL_FRONT, GL_BACK or GL_FRONT_AND_BACK)
 		glEnable(GL_CULL_FACE);
 
 		// Get the view and projection matrices
@@ -109,6 +107,12 @@ namespace GE {
 
 		glUniformMatrix4fv(viewUniformId, 1, GL_FALSE, glm::value_ptr(viewMat));
 		glUniformMatrix4fv(projectionUniformId, 1, GL_FALSE, glm::value_ptr(projectionMat));
+
+		// Pass the camera position to fragment shader viewPos
+		glUniform3f(viewPosId, cam->getPos().x, cam->getPos().y, cam->getPos().z);
+
+		// Pass the light to the fragment shader
+		glUniform3f(lightColourId, 1.0f, 1.0f, 1.0f);
 
 		// Select the vertex buffer object into the context
 		glBindBuffer(GL_ARRAY_BUFFER, m->getVertices());
@@ -127,14 +131,19 @@ namespace GE {
 		// Colour data is four float values, located at where the r member is.  Stride is a vertex apart
 		glVertexAttribPointer(vertexUVLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, u));
 
-		// 6. Unbind the vertex buffer before defining the input for the
+		glEnableVertexAttribArray(vertexNormal);
+
+		// Define where pipeline will find vertex normal in a vertex in vertex buffer to put into vertexNormal attribute
+		glVertexAttribPointer(vertexNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, nx));
+
+		// Unbind the vertex buffer before defining the input for the
 		// transformation matrices instance buffer
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		// 7. Now bind the matrix to the input specification which starts at instance_transform_mat
+		// Bind the matrix to the input specification which starts at instance_transform_mat
 		glBindBuffer(GL_ARRAY_BUFFER, instanceMatrixBuffer);
 
-		// 8. Define the layout of the instance matrix input attribute in terms of
+		// Define the layout of the instance matrix input attribute in terms of
 		// four vec4 values.  Reason is can't define an input in more than a vec4 so
 		// matrix has be broken down into four vec4s
 		glEnableVertexAttribArray(instanceMatLocation);
@@ -146,7 +155,7 @@ namespace GE {
 		glEnableVertexAttribArray(instanceMatLocation + 3);
 		glVertexAttribPointer(instanceMatLocation + 3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
 
-		// 9. Define how the instance data is used in terms of how many instances
+		// Define how the instance data is used in terms of how many instances
 		// pass before the transformation matrix is updated.  1 means one instance
 		// or one pass of all of the vertices in the model.  2 means after two
 		// passes and so on.  0 means every vertex which is normal behaviour
@@ -155,7 +164,7 @@ namespace GE {
 		glVertexAttribDivisor(instanceMatLocation + 2, 1);
 		glVertexAttribDivisor(instanceMatLocation + 3, 1);
 
-		// 10. Unbind the instance buffer as may want to define more inputs
+		// Unbind the instance buffer as may want to define more inputs
 		// based on another buffer
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -170,19 +179,22 @@ namespace GE {
 
 		glBindTexture(GL_TEXTURE_2D, tex->getTextureName());
 
-		// 11. Draw the instances
+		// Draw the instances
 		glDrawArraysInstanced(GL_TRIANGLES, 0, m->getNumVertices(), numInstances);
 
 		glDisableVertexAttribArray(vertexLocation);
 		glDisableVertexAttribArray(vertexUVLocation);
 
-		// 12. Set attributes back to per vertex selection
+		// Unselect the normal attribute from the pipeline
+		glDisableVertexAttribArray(vertexNormal);
+
+		// Set attributes back to per vertex selection
 		glVertexAttribDivisor(instanceMatLocation, 0);
 		glVertexAttribDivisor(instanceMatLocation + 1, 0);
 		glVertexAttribDivisor(instanceMatLocation + 2, 0);
 		glVertexAttribDivisor(instanceMatLocation + 3, 0);
 
-		// 12. Unselect the attribute from the context
+		// Unselect the attribute from the context
 		glDisableVertexAttribArray(vertexLocation);
 		glDisableVertexAttribArray(vertexUVLocation);
 		glDisableVertexAttribArray(instanceMatLocation);
@@ -204,7 +216,7 @@ namespace GE {
 		return min + static_cast<float>(rand()) / RAND_MAX * (max - min);
 	}
 
-	InstancePosRotScale InstanceRenderer::getRandomPos(
+	InstancePosRotScale InstanceRenderer::setRandomPos(
 		float minX, float maxX,
 		float minY, float maxY,
 		float minZ, float maxZ,

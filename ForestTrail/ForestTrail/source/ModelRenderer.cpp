@@ -17,57 +17,19 @@ namespace GE {
 
 	// Creates and compiles the shaders, creates the project and links it and creates the vertex buffer object
 	void ModelRenderer::init() {
-		const GLchar* V_ShaderCode[] = {
-			"#version 410\n"
-			"in vec3 vertexPos3D;\n"
-			"in vec3 vertexNormal;\n"
-			"in vec2 vUV;\n"
-			"out vec2 uv;\n"
-			"out vec3 posW;\n"
-			"out vec3 outNormal;\n"
-			"uniform mat4 transformMat;\n"
-			"uniform mat4 viewMat;\n"
-			"uniform mat4 projMat;\n"
-			"void main() {\n"
-			"vec4 v = vec4(vertexPos3D.xyz, 1);\n"
-			"posW = vec3(viewMat * transformMat * v);\n"
-			"outNormal = vec3(viewMat * transformMat * vec4(vertexNormal, 0.0f));\n"
-			"v = projMat * viewMat * transformMat * v;\n"
-			"gl_Position = v;\n"
-			"uv = vUV;\n"
-			"}\n"
-		};
+		// Load shader code from files using the ShaderUtils class
+		std::string v_shader_source = loadShaderSourceCode("./shaders/model.vert");
+		std::string f_shader_source = loadShaderSourceCode("./shaders/model.frag");
 
-		const GLchar* F_ShaderCode[] = {
-			"#version 410\n"
-			"in vec2 uv;\n"
-			"in vec3 outNormal;\n"
-			"in vec3 posW;\n"
-			"uniform vec3 lightColour;\n"
-			"const vec3 ambient = vec3(0.1f, 0.1f, 0.1f);\n"
-			"const vec3 lightPos = vec3(0.0f, 10.0f, 0.0f);\n"
-			"const float shininess = 32.0f;\n"
-			"const float specularStrength = 0.2f;\n"
-			"uniform vec3 viewPos;\n"
-			"uniform sampler2D sampler;\n"
-			"out vec4 fragmentColour;\n"
-			"void main() {\n"
-			"vec4 texColour = texture(sampler, uv).rgba;\n"
-			"vec3 normalizedNormal = normalize(outNormal);\n"
-			"vec3 lightDirection = normalize(lightPos - posW);\n"
-			"float diffIllum = max(dot(normalizedNormal, lightDirection), 0.0f);\n"
-			"vec3 diffuse = diffIllum * lightColour;\n"
-			"vec3 viewDir = normalize(viewPos - posW);\n"
-			"vec3 reflectDirection = reflect(-lightDirection, normalizedNormal);\n"
-			"float spec = pow(max(dot(viewDir, reflectDirection), 0.0f), shininess);\n"
-			"vec3 specular = specularStrength * spec * lightColour;\n"
-			"vec3 finalColour = ambient + diffuse * texColour.rgb + specular;\n"
-			"fragmentColour = vec4(finalColour, texColour.a);\n"
-			"}\n"
-		};
+		// OpenGL expects an array of strings, create an array of the loaded source code
+		const GLchar* v_source_array[] = { v_shader_source.c_str() };
+		const GLchar* f_source_array[] = { f_shader_source.c_str() };
 
 		// Attaches the vertex shader and fragment shader to the program
-		compileProgram(V_ShaderCode, F_ShaderCode, &programId);
+		// Compile shaders into a program
+		if (!compileProgram(v_source_array, f_source_array, &programId)) {
+			std::cerr << "Problem building instancing program.  Check console log for more information." << std::endl;
+		}
 
 		// Get a link to the vertexPos2D to link vertices when rendering
 		vertexPos3DLocation = glGetAttribLocation(programId, "vertexPos3D");
