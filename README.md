@@ -59,35 +59,55 @@ The game scene will be a forest that encourages exploration and presents the pla
 ---
 
 ## Code Profiling
-### [08/04/2026 - After optimising drawing UI stats]
+### <u>[08/04/2026]</u> - After optimising drawing UI stats
 - **FPS**: ~42 FPS
-- **ge.init()**: 856ms
-- **ge.update()**: ~0.35ms average
-- **ge.draw()**: ~23.36ms average
+- **ge.init()**: ~881.6ms
+- **ge.update()**: ~0.192ms average
+- **ge.draw()**: ~23.51ms average
 
-**Improvement:** -0.31ms
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5||Average|
+|---|---|---|---|---|---||---|
+|ge.init()|814ms|889ms|823ms|969ms|913ms||881.6ms|
+|ge.update()|0.14ms|0.16ms|0.21ms|0.18ms|0.27ms||0.192ms|
+|ge.draw()|23.97ms|23.50ms|23.67ms|23.50ms|23.02ms||23.51ms|
 
-### [08/04/2026 - 5 models, 1 dynamic model, instanced models, flat terrain, UI elements]
+**Improvement:** 1.37ms
+
+Optimised debug stats, rendering and performance profiling by caching entity/vertex counts, timing key functions, and updating nearest object calculations less frequently. Streamlined code with inline conditionals and efficient distance computations, reducing intialisation and frame update times noticeably.
+
+### <u>[08/04/2026</u>] - 5 models, 1 dynamic model, instanced models, flat terrain, UI elements
 - **FPS**: ~42 FPS
-- **ge.init()**: 644ms
-- **ge.update()**: ~0.30ms average
-- **ge.draw()**: ~23.67ms average*
+- **ge.init()**: ~1034ms average
+- **ge.update()**: ~0.22ms average
+- **ge.draw()**: ~24.88ms average
 
-*Measured across five runs: 28.74ms, 23.96ms, 23.76ms, 23.23ms, 23.43ms
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5||Average|
+|---|---|---|---|---|---||---|
+|ge.init()|1998ms|718ms|793ms|842ms|821ms||1034ms|
+|ge.update()|0.25ms|0.13ms|0.30ms|0.20ms|0.23ms||0.22ms|
+|ge.draw()|24.62ms|24.76ms|27.86ms|23.54ms|23.66ms||24.88ms|
 
 Draw function is the bottleneck - limits performance. Requires some optimisation to reduce time taken for call.
 
-### [05/03/2026 - 5 models, 1 dynamic model, flat terrain, camera movement]
+### <u>[05/03/2026]</u> - 5 models, 1 dynamic model, flat terrain, camera movement
 - Runtime performance: ~41 FPS (home machine)
 - Game Engine Initialisation: ~745ms average*
 
-*Measured across five runs: 1292ms, 688ms, 582ms, 592ms, 571ms
+*Measured across five runs:
 
-### [09/02/2026 - empty scene with flat terrain]
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5||Average|
+|---|---|---|---|---|---||---|
+|ge.init()|1292ms|688ms|582ms|592ms|571ms||745ms|
+
+### <u>[09/02/2026]</u> - empty scene with flat terrain
 - Runtime performance: ~41 FPS (home machine)
 - Game Engine Initialisation: ~432ms average*
 
-*Measured across five runs: 405ms, 476ms, 449ms, 436ms, 398ms
+*Measured across five runs:
+
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5||Average|
+|---|---|---|---|---|---||---|
+|ge.init()|405ms|476ms|449ms|436ms|398ms||432ms|
 
 ## TODO: Add the following details and update regularly
 
@@ -98,5 +118,5 @@ Draw function is the bottleneck - limits performance. Requires some optimisation
 5. [DONE] Dependencies - libraries used such as SDL2, SDL2_image, etc.
 6. [DONE] Playing the game - how to run the game and key bindings
 7. [DONE] Code profiling results on Windows and Linux
-8. Optimisations applied
+8. [DONE] Optimisations applied
 9. References to sources used.  This must include graphics resources used such as models and textures, and code resources (websites, book, AI).
