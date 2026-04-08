@@ -11,10 +11,11 @@ namespace GE {
 		// Location
 		float x, y, z;
 		float u, v;
+		float nx, ny, nz;
 
 		// Constructors
 		// Sets vertex to passed values
-		Vertex(float x_, float y_, float z_, float u_, float v_) {
+		Vertex(float x_, float y_, float z_, float u_, float v_, float nx_, float ny_, float nz_) {
 			// Location
 			x = x_;
 			y = y_;
@@ -23,11 +24,17 @@ namespace GE {
 			// Colour
 			u = u_;
 			v = v_;
+
+			// Normals
+			nx = nx_;
+			ny = ny_;
+			nz = nz_;
 		}
 
 		Vertex() {
 			x = y = z = 0.0f;
 			u = v = 0.0f;
+			nx = ny = nz = 0.0f;
 		}
 	};
 

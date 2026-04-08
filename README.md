@@ -24,6 +24,9 @@ The game scene will be a forest that encourages exploration and presents the pla
 - Instancing (trees, rocks)
 - HUD (current camera mode, FPS, camera/player position, camera/player rotation, objects loaded, nearest object, num of vertices, num of triangles)
 
+### 70%+
+- Lighting
+
 ## Future Features
 ### 50-59% (Optional)
 - Billboard objects (distant trees)
@@ -32,7 +35,7 @@ The game scene will be a forest that encourages exploration and presents the pla
 - Minimap
 
 ### 70%+
-- Lighting + shadows
+- Shadows
 - Special effects (particles - fire, leaves falling, embers, magic glow)
 (Optional: Post-processing - bloom, bump maps, reflections in water/surfaces)
 
@@ -45,10 +48,13 @@ The game scene will be a forest that encourages exploration and presents the pla
 - glm
 - glew
 - assimp
+- freetype
 
 ## How to Play
 - WASD to move around
 - Mouse to look around
+- TAB to toggle camera mode
+- F1 to open debug stats
 
 ## Code Profiling
 05/03/2026 - 5 models, 1 dynamic model, flat terrain, camera movement

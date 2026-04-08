@@ -35,8 +35,10 @@ namespace GE {
 					// Get UVs for vertex. This code assumes there are UVs defined in the model vertices. If not, then the code will crash
 					const aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[vertIdx]];
 
+					const aiVector3D* norm = &mesh->mNormals[face.mIndices[vertIdx]];
+
 					// Create a new object in the shape array based on the extracted vertex. This shape array will be used to create the vertex buffer
-					loadedVertices.push_back(Vertex(pos->x, pos->y, pos->z, uv.x, uv.y));
+					loadedVertices.push_back(Vertex(pos->x, pos->y, pos->z, uv.x, uv.y, norm->x, norm->y, norm->z));
 				}
 			}
 		}

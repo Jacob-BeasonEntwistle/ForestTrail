@@ -33,6 +33,9 @@ namespace GE {
 		// Link to vColour attribute which receives the colour value in Vertex
 		GLint vertexUVLocation;
 
+		// Link to normal attribute
+		GLint vertexNormal;
+
 		// This member stores the triangle vertex buffer object containing the vertices transferred from this code to graphics memory
 		GLuint vboModel;
 
@@ -41,6 +44,10 @@ namespace GE {
 		GLuint viewUniformId;
 		GLuint projectionUniformId;
 		GLuint samplerId;
+		// For camera position
+		GLuint viewPosId;
+		// For light colour
+		GLuint lightColourId;
 
 		Entity* entity;
 	};

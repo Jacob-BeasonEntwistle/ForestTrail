@@ -41,14 +41,14 @@ namespace GE {
 		Uint32 lastTicks = 0;
 		
 		// Members for the fps counter
-		Uint32 fpsLastTime;
-		int frameCount;
-		int currentFPS;
+		Uint32 fpsLastTime = 0;
+		int frameCount = 0;
+		int currentFPS = 0;
 		std::string fpsText;
 
-		SDL_Window* window;
+		SDL_Window* window = nullptr;
 
-		SDL_GLContext glContext;
+		SDL_GLContext glContext = nullptr;
 
 		bool vsync = false;		// By default vsync is off
 
@@ -59,38 +59,38 @@ namespace GE {
 		int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
 
 		// [Camera & settings]
-		Camera* cam;
+		Camera* cam = nullptr;
 		// Third person toggle
 		bool thirdPerson = false;
 		// Stats toggle
 		bool showStats = false;
 
 		// Camera controllers
-		FPSCameraController* fpsCam;
-		ThirdPersonController* thirdCam;
+		FPSCameraController* fpsCam = nullptr;
+		ThirdPersonController* thirdCam = nullptr;
 
 		// Distance/direction to look from camera
-		glm::vec3 dist;
+		glm::vec3 dist = glm::vec3(0.0f);
 
 		// Entities
-		Entity* rock;
-		Entity* sign;
-		Entity* crate;
-		Entity* fence;
-		Entity* tree;
-		Entity* podium;
-		Entity* orb;
-		Entity* hedgehog;
+		Entity* rock = nullptr;
+		Entity* sign = nullptr;
+		Entity* crate = nullptr;
+		Entity* fence = nullptr;
+		Entity* tree = nullptr;
+		Entity* podium = nullptr;
+		Entity* orb = nullptr;
+		Entity* hedgehog = nullptr;
 
-		Entity* player;
+		Entity* player = nullptr;
 
 		// Texture for all Models
-		Texture* tex;
+		Texture* tex = nullptr;
 		// Blank texture
-		Texture* blank;
+		Texture* blank = nullptr;
 
 		// Model renderer
-		ModelRenderer* mr;
+		ModelRenderer* mr = nullptr;
 
 		// Orb (dynamic model) variables
 		float dynamDirection = 1.0f;
@@ -100,17 +100,17 @@ namespace GE {
 		std::vector<Entity*> loadedEntities;
 
 		// TriangleRenderer object variable
-		TriangleRenderer* triangle;
+		TriangleRenderer* triangle = nullptr;
 		
 		// SkyboxRenderer object variable
-		SkyboxRenderer* skybox;
+		SkyboxRenderer* skybox = nullptr;
 
 		// FontRendererFT object variable
-		FontRendererFT* fontFT;
+		FontRendererFT* fontFT = nullptr;
 
 		// InstanceRenderer object variable
-		InstanceRenderer* treeIr;
-		InstanceRenderer* rockIr;
+		InstanceRenderer* treeIr = nullptr;
+		InstanceRenderer* rockIr = nullptr;
 
 		// Vectors used for rendering instances
 		std::vector<InstancePosRotScale> treeInstances;
