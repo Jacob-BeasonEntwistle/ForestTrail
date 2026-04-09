@@ -65,11 +65,11 @@ The game scene will be a forest that encourages exploration and presents the pla
 - **ge.update()**: ~0.192ms average
 - **ge.draw()**: ~23.51ms average
 
-|Function|Run 1|Run 2|Run 3|Run 4|Run 5|&nbsp;|Average|
-|---|---|---|---|---|---|&nbsp;|---|
-|ge.init()|814ms|889ms|823ms|969ms|913ms|&nbsp;|881.6ms|
-|ge.update()|0.14ms|0.16ms|0.21ms|0.18ms|0.27ms|&nbsp;|0.192ms|
-|ge.draw()|23.97ms|23.50ms|23.67ms|23.50ms|23.02ms|&nbsp;|23.51ms|
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5|Average|
+|---|---|---|---|---|---|---|
+|ge.init()|814ms|889ms|823ms|969ms|913ms|881.6ms|
+|ge.update()|0.14ms|0.16ms|0.21ms|0.18ms|0.27ms|0.192ms|
+|ge.draw()|23.97ms|23.50ms|23.67ms|23.50ms|23.02ms|23.51ms|
 
 **Improvement:** 1.37ms
 
@@ -81,11 +81,11 @@ Optimised debug stats, rendering and performance profiling by caching entity/ver
 - **ge.update()**: ~0.22ms average
 - **ge.draw()**: ~24.88ms average
 
-|Function|Run 1|Run 2|Run 3|Run 4|Run 5|&nbsp;|Average|
-|---|---|---|---|---|---|&nbsp;|---|
-|ge.init()|1998ms|718ms|793ms|842ms|821ms|&nbsp;|1034ms|
-|ge.update()|0.25ms|0.13ms|0.30ms|0.20ms|0.23ms|&nbsp;|0.22ms|
-|ge.draw()|24.62ms|24.76ms|27.86ms|23.54ms|23.66ms|&nbsp;|24.88ms|
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5|Average|
+|---|---|---|---|---|---|---|
+|ge.init()|1998ms|718ms|793ms|842ms|821ms|1034ms|
+|ge.update()|0.25ms|0.13ms|0.30ms|0.20ms|0.23ms|0.22ms|
+|ge.draw()|24.62ms|24.76ms|27.86ms|23.54ms|23.66ms|24.88ms|
 
 Draw function is the bottleneck - limits performance. Requires some optimisation to reduce time taken for call.
 
@@ -95,9 +95,9 @@ Draw function is the bottleneck - limits performance. Requires some optimisation
 
 *Measured across five runs:
 
-|Function|Run 1|Run 2|Run 3|Run 4|Run 5|&nbsp;|Average|
-|---|---|---|---|---|---|&nbsp;|---|
-|ge.init()|1292ms|688ms|582ms|592ms|571ms|&nbsp;|745ms|
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5|Average|
+|---|---|---|---|---|---|---|
+|ge.init()|1292ms|688ms|582ms|592ms|571ms|745ms|
 
 ### <u>[09/02/2026]</u> - empty scene with flat terrain
 - Runtime performance: ~41 FPS (home machine)
@@ -105,9 +105,9 @@ Draw function is the bottleneck - limits performance. Requires some optimisation
 
 *Measured across five runs:
 
-|Function|Run 1|Run 2|Run 3|Run 4|Run 5|&nbsp;|Average|
-|---|---|---|---|---|---|&nbsp;|---|
-|ge.init()|405ms|476ms|449ms|436ms|398ms|&nbsp;|432ms|
+|Function|Run 1|Run 2|Run 3|Run 4|Run 5|Average|
+|---|---|---|---|---|---|---|
+|ge.init()|405ms|476ms|449ms|436ms|398ms|432ms|
 
 ## TODO: Add the following details and update regularly
 
