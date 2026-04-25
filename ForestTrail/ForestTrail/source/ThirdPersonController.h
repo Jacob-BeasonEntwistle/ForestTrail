@@ -33,7 +33,7 @@ namespace GE {
 
 		}
 
-		void update(float deltaTime, bool* keyStates) {
+		void update(float deltaTime, bool* keyStates, bool isSprinting) {
 			// Work out midpoint of window
 			SDL_Window* window = SDL_GL_GetCurrentWindow();
 			int w, h;
@@ -64,22 +64,31 @@ namespace GE {
 
 			glm::vec3 pos = player->getTransform().getPosition();
 
+			// If the player is sprinting, increase the current speed
+			if (isSprinting) {
+				currentSpeed = 30.0f;
+			}
+			// Else, return it to its original speed
+			else {
+				currentSpeed = moveSpeed;
+			}
+
 			// Move in direction based on keyState pressed and time elapsed since last update
 			if (keyStates[0]) {
 				// Move forwards
-				pos += fwd * (moveSpeed * deltaTime);
+				pos += fwd * (currentSpeed * deltaTime);
 			}
 			if (keyStates[1]) {
 				// Move backwards
-				pos -= fwd * (moveSpeed * deltaTime);
+				pos -= fwd * (currentSpeed * deltaTime);
 			}
 			if (keyStates[2]) {
 				// Strafe left
-				pos -= right * (moveSpeed * deltaTime);
+				pos -= right * (currentSpeed * deltaTime);
 			}
 			if (keyStates[3]) {
 				// Strafe right
-				pos += right * (moveSpeed * deltaTime);
+				pos += right * (currentSpeed * deltaTime);
 			}
 
 			player->getTransform().setPosition(pos);
@@ -112,6 +121,7 @@ namespace GE {
 		float mouseSens = 0.1f;
 		// Movement speed
 		const float moveSpeed = 15.0f;
+		float currentSpeed = 0.0f;
 
 		// Camera offset for thirdperson view
 		glm::vec3 camOffset;

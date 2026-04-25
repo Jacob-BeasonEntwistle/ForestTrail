@@ -42,7 +42,7 @@ namespace GE {
 			"#version 410\n"
 			"out vec4 fragmentColour;\n"
 			"void main() {\n"
-			"fragmentColour = vec4(0, 0.415, 0.305, 0.5);\n"
+			"fragmentColour = vec4(0, 0.415, 0.305, 1.0);\n"
 			"}\n"
 		};
 

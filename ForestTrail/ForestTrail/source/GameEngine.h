@@ -15,6 +15,7 @@
 #include "Entity.h"
 #include "FontRendererFT.h"
 #include "InstanceRenderer.h"
+#include "GUIRenderer.h"
 
 namespace GE {
 	class GameEngine {
@@ -64,6 +65,8 @@ namespace GE {
 		bool thirdPerson = false;
 		// Stats toggle
 		bool showStats = false;
+		// Sprinting
+		bool isSprinting = false;
 
 		// [Stats variables]
 		int numOfEntities = 0;
@@ -106,7 +109,7 @@ namespace GE {
 		// For storing entities
 		std::vector<Entity*> loadedEntities;
 
-		// TriangleRenderer object variable
+		// TriangleRenderer object variable - Terrain
 		TriangleRenderer* triangle = nullptr;
 		
 		// SkyboxRenderer object variable
@@ -114,6 +117,14 @@ namespace GE {
 
 		// FontRendererFT object variable
 		FontRendererFT* fontFT = nullptr;
+
+		// GUIRenderer object variable
+		GUIRenderer* gui = nullptr;
+
+		GUIImage* crosshairImg = nullptr;
+		GUIImage* miniMapBackgronudImg = nullptr;
+		GUIImage* miniMapImg = nullptr;
+		GUIImage* playerIconImg = nullptr;
 
 		// InstanceRenderer object variable
 		InstanceRenderer* treeIr = nullptr;

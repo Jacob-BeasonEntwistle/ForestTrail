@@ -47,6 +47,8 @@ namespace GE {
 			return false;
 		}
 
+		SDL_ShowCursor(SDL_DISABLE);
+
 		// Creates OpenGL context and links it to the window object
 		// Context represents OpenGL for program such as objects and drawing
 		glContext = SDL_GL_CreateContext(window);
@@ -90,7 +92,7 @@ namespace GE {
 			glm::vec3(0.0f, 1.0f, 0.0f),	// Up direction
 			FOV, w / h, 0.1f, 150.0f);	// FOV, aspect ratio based on window dimensions, near and far clip planes
 
-		// Create the TriangleRenderer object for the terrain
+		// Create the TriangleRenderer object - terrain
 		triangle = new TriangleRenderer();
 
 		// Initialise the terrain (two triangles)
@@ -159,8 +161,24 @@ namespace GE {
 		fpsCam = new FPSCameraController(cam);
 		thirdCam = new ThirdPersonController(cam, player);
 
+		// Create the font renderer
 		fontFT = new FontRendererFT();
 		fontFT->init();
+
+		// Create the gui renderer
+		gui = new GUIRenderer(w, h);
+		gui->init();
+
+		// Create the crosshair texture for the gui to render
+		Texture* crosshairTex = new Texture("./textures/Crosshair.png");
+		crosshairImg = new GUIImage((w / 2) - (crosshairTex->getWidth() / 2), (h / 2) - (crosshairTex->getHeight() / 2), crosshairTex);
+
+		Texture* miniMapBackgroundTex = new Texture("./textures/minimap_background.png");
+		miniMapBackgronudImg = new GUIImage(24, 24, miniMapBackgroundTex);
+		Texture* miniMapTex = new Texture("./textures/mini_map.png");
+		miniMapImg = new GUIImage(24, 24, miniMapTex);
+		Texture* playerIconTex = new Texture("./textures/player_icon.png");
+		playerIconImg = new GUIImage(0, 0, playerIconTex);
 
 		treeIr = new InstanceRenderer();
 		treeIr->init();
@@ -249,12 +267,17 @@ namespace GE {
 				case SDL_SCANCODE_D:
 					keyStates[RIGHT] = true;
 					break;
+				// Change camera mode
 				case SDL_SCANCODE_TAB:
 					thirdPerson = !thirdPerson;
 					break;
+				// Show debugging stats
 				case SDL_SCANCODE_F1:
 					showStats = !showStats;
 					break;
+				// Enable sprinting
+				case SDL_SCANCODE_LSHIFT:
+					isSprinting = true;
 				}
 			}
 			if (evt.type == SDL_KEYUP) {
@@ -275,6 +298,9 @@ namespace GE {
 				case SDL_SCANCODE_D:
 					keyStates[RIGHT] = false;
 					break;
+				// Disable sprinting
+				case SDL_SCANCODE_LSHIFT:
+					isSprinting = false;
 				}
 			}
 		}
@@ -303,11 +329,33 @@ namespace GE {
 
 		// Changing between camera views
 		if (thirdPerson) {
-			thirdCam->update(deltaTime, keyStates);
+			thirdCam->update(deltaTime, keyStates, isSprinting);
 		}
 		else {
-			fpsCam->update(deltaTime, keyStates);
+			fpsCam->update(deltaTime, keyStates, isSprinting);
 		}
+
+		// Get player world position
+		glm::vec3 viewCameraPos = !thirdPerson ? cam->getPos() : player->getTransform().getPosition();
+		
+		// Define minimap bounds
+		int minimapWidth = 128, minimapHeight = 128;
+
+		float worldSize = 100.0f;
+
+		float normX = (viewCameraPos.x + worldSize) / (2.0f * worldSize);
+		float normZ = (viewCameraPos.z + worldSize) / (2.0f * worldSize);
+
+		if (normX < 0) normX = 0.0f;
+		if (normX > minimapWidth) normX = 1.0f;
+		if (normZ < 0) normZ = 0.0f;
+		if (normZ > minimapHeight) normZ = 1.0f;
+
+		float mapX = normX * minimapWidth;
+		float mapY = normZ * minimapHeight;
+
+		playerIconImg->setX(mapX + 24);
+		playerIconImg->setY(mapY + 24);
 
 		// Moving the dynamic model
 		glm::vec3 orbPos = orb->getTransform().getPosition();
@@ -362,13 +410,28 @@ namespace GE {
 		// Switching between the different camera modes
 		if (thirdPerson) {
 			mr->draw(cam, player);
-			fontFT->RenderText("[ THIRD-PERSON CAMERA ]", 48, h - 48, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+			float scale = 0.5f;
+			std::string text = "[ THIRD-PERSON CAMERA ]";
+			float textWidth = fontFT->getTextWidth(text, scale);
+
+			// Center the text on screen
+			fontFT->RenderText(text, (w - textWidth) / 2, h - 48, scale, glm::vec3(1.0f));
 		}
 		else {
-			fontFT->RenderText("[ FREE-ROAM CAMERA ]", 48, h - 48, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+			float scale = 0.5f;
+			std::string text = "[ FREE-ROAM CAMERA ]";
+			float textWidth = fontFT->getTextWidth(text, scale);
+
+			fontFT->RenderText(text, (w - textWidth) / 2, h - 48, scale, glm::vec3(1.0f));
 		}
 		
 		// --[UI ELEMENTS]--
+		// Crosshair element
+		gui->drawImage(crosshairImg);
+		gui->drawImage(miniMapBackgronudImg);
+		gui->drawImage(miniMapImg);
+		gui->drawImage(playerIconImg);
+		
 		// Show game statistics
 		if (showStats) {
 			// --[DEBUGGING LIST]--
@@ -511,6 +574,15 @@ namespace GE {
 			delete fontFT;
 		}
 
+		if (gui != nullptr) {
+			delete gui;
+		}
+		
+		delete crosshairImg;
+		delete miniMapBackgronudImg;
+		delete miniMapImg;
+		delete playerIconImg;
+
 		if (treeIr != nullptr) {
 			treeIr->destroy();
 			delete treeIr;
@@ -522,6 +594,8 @@ namespace GE {
 		}
 
 		skybox->destroy();
+
+		SDL_ShowCursor(SDL_ENABLE);
 
 		SDL_DestroyWindow(window);
 

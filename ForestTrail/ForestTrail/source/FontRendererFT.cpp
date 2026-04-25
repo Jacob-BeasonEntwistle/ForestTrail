@@ -151,6 +151,26 @@ namespace GE {
         glDisable(GL_BLEND);
     }
 
+    // Helper function to get the total width of the text - useful for centering text
+    float FontRendererFT::getTextWidth(std::string text, float scale)
+    {
+        float width = 0.0f;
+
+        // For each character in the string
+        for (char c : text) {
+            // Get the preloaded glyph data for the character
+            Character ch = charactersMap[c];
+
+            // Advance represents horizontal cursor movement in 1/64th pixel units
+            // Adding up how far each letter tells you to move to work out width of whole word
+            
+            // Convert the character to pixel space and apply the scale
+            width += (ch.Advance >> 6) * scale;
+        }
+
+        return width;
+    }
+
     void FontRendererFT::setupShaders()
     {
         // Load shader code from files using the ShaderUtils class

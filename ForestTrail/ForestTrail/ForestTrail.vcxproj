@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\GUIRenderer.h" />
     <ClInclude Include="source\Entity.h" />
     <ClInclude Include="source\FontRendererFT.h" />
     <ClInclude Include="source\FPSCameraController.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="source\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\GUIRenderer.cpp" />
     <ClCompile Include="source\FontRendererFT.cpp" />
     <ClCompile Include="source\InstanceRenderer.cpp" />
     <ClCompile Include="source\SkyboxRenderer.cpp" />

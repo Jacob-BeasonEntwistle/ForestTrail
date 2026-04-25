@@ -26,6 +26,8 @@ namespace GE {
 		~FontRendererFT() = default;
 		void init();
 		void RenderText(std::string text, float x, float y, float scale, glm::vec3 color);
+		// Helper function to get the total width of the text - useful for centering text
+		float getTextWidth(std::string text, float scale);
 
 	private:
 		void setupShaders();
@@ -45,6 +47,3 @@ namespace GE {
 		GLuint textColourId;
 	};
 }
-
-
-
