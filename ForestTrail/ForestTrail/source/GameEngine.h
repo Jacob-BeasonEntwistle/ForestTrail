@@ -120,11 +120,17 @@ namespace GE {
 
 		// GUIRenderer object variable
 		GUIRenderer* gui = nullptr;
-
+		
+		// GUI images
 		GUIImage* crosshairImg = nullptr;
 		GUIImage* miniMapBackgronudImg = nullptr;
 		GUIImage* miniMapImg = nullptr;
 		GUIImage* playerIconImg = nullptr;
+
+		// Define minimap bounds
+		float minimapSize = 128.0f;
+		float minimapPadding = 6.0f;	// Padding to avoid overlapping the background texture
+		float worldSize = 70.0f;		// The size of the world terrain
 
 		// InstanceRenderer object variable
 		InstanceRenderer* treeIr = nullptr;

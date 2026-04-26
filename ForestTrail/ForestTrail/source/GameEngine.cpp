@@ -335,28 +335,31 @@ namespace GE {
 			fpsCam->update(deltaTime, keyStates, isSprinting);
 		}
 
+		// --[Minimap Logic]--
 		// Get player world position
 		glm::vec3 viewCameraPos = !thirdPerson ? cam->getPos() : player->getTransform().getPosition();
 		
-		// Define minimap bounds
-		int minimapWidth = 128, minimapHeight = 128;
-
-		float worldSize = 100.0f;
-
+		// Converting world position to normalized space
 		float normX = (viewCameraPos.x + worldSize) / (2.0f * worldSize);
 		float normZ = (viewCameraPos.z + worldSize) / (2.0f * worldSize);
 
-		if (normX < 0) normX = 0.0f;
-		if (normX > minimapWidth) normX = 1.0f;
-		if (normZ < 0) normZ = 0.0f;
-		if (normZ > minimapHeight) normZ = 1.0f;
+		// Clamp values to a valid range - prevents values from going below 0 or above 1
+		// Prevents player icon from leaving minimap border
+		normX = glm::clamp(normX, 0.0f, 1.0f);
+		normZ = glm::clamp(normZ, 0.0f, 1.0f);
 
-		float mapX = normX * minimapWidth;
-		float mapY = normZ * minimapHeight;
+		// Convert the normalized values to minimap values (final step of converting world space to minimap space)
+		float mapX = normX * minimapSize;
+		float mapY = normZ * minimapSize;
 
-		playerIconImg->setX(mapX + 24);
-		playerIconImg->setY(mapY + 24);
+		// Place the player icon on the minimap using: 
+		// the offset of the minimap + 
+		// the padding to avoid the border + 
+		// the current position
+		playerIconImg->setX(miniMapImg->getX() + minimapPadding + mapX);
+		playerIconImg->setY(miniMapImg->getY() + minimapPadding + mapY);
 
+		// --[Dynamic Models]--
 		// Moving the dynamic model
 		glm::vec3 orbPos = orb->getTransform().getPosition();
 		glm::vec3 orbRot = orb->getTransform().getRotation();
