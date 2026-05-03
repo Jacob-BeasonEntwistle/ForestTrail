@@ -19,24 +19,20 @@ The game scene will be a forest that encourages exploration and presents the pla
 - Third person camera (+ switching between povs)
 - Dynamic models (rotating statue and hedgehog)
 - FPS text (UI)
+- Billboard objects (rendered particle textures)
 
 ### 60-69%
 - Instancing (trees, rocks)
 - HUD (current camera mode, FPS, camera/player position, camera/player rotation, objects loaded, nearest object, num of vertices, num of triangles)
-
-### 70%+
-- Lighting
-
-## Future Features
-### 50-59% (Optional)
-- Billboard objects (distant trees)
-
-### 60-69% (Optional)
 - Minimap
 
 ### 70%+
-- Shadows
+- Lighting
 - Special effects (particles - fire, leaves falling, embers, magic glow)
+
+## Future Features
+### 70%+
+- Shadows
 (Optional: Post-processing - bloom, bump maps, reflections in water/surfaces)
 
 ## Target Platform
