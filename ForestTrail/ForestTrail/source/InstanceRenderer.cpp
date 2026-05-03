@@ -2,6 +2,7 @@
 #include "ShaderUtils.h"
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+#include "MathUtils.h"
 
 namespace GE {
 	InstanceRenderer::InstanceRenderer() {
@@ -208,14 +209,6 @@ namespace GE {
 		glDisable(GL_CULL_FACE);
 	}
 
-	float InstanceRenderer::randomFloat(float min, float max) {
-		// rand gives int between 0 and RAND_MAX
-		// Dividing by RAND_MAX normalizes it to [0.0, 1.0]
-		// Multiply it by the range size (e.g. (-30) - (-50) = 20)
-		// Then add the minimum to shift it into the correct range
-		return min + static_cast<float>(rand()) / RAND_MAX * (max - min);
-	}
-
 	InstancePosRotScale InstanceRenderer::setRandomPos(
 		float minX, float maxX,
 		float minY, float maxY,
@@ -231,19 +224,19 @@ namespace GE {
 
 		// If the side chosen is the left set x pos on the left
 		if (side == 0) {
-			x = randomFloat(minX, maxX);
+			x = randomRange(minX, maxX);
 		}
 		// If the side chosen is the right set x pos on the right
 		else {
-			x = randomFloat(minX2, maxX2);
+			x = randomRange(minX2, maxX2);
 		}
 
-		float y = randomFloat(minY, maxY);
+		float y = randomRange(minY, maxY);
 
 		// Randomise the z pos for each tree
-		float z = randomFloat(minZ, maxZ);
+		float z = randomRange(minZ, maxZ);
 		// Randomise the scale of the tree between 0.65 and 1.3
-		float scale = randomFloat(minScale, maxScale);
+		float scale = randomRange(minScale, maxScale);
 
 		// Create an instance of the tree with the randomised coordinates and scale
 		return InstancePosRotScale{ x, y, z, 0.0f, 0.0f, 0.0f, scale, scale, scale };

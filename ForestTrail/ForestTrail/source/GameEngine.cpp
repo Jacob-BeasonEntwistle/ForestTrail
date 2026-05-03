@@ -138,7 +138,7 @@ namespace GE {
 		loadedEntities.push_back(orb);
 		loadedEntities.push_back(hedgehog);
 
-		// Create the Model renderer object
+		// Create the model renderer object
 		mr = new ModelRenderer();
 		mr->init();
 
@@ -224,6 +224,31 @@ namespace GE {
 		totalVertices += rock->getModel()->getNumVertices() * num_rocks;
 		// Calculate triangles
 		totalTriangles = totalVertices / 3;
+
+		// Creating the particle system
+		ps = new ParticleSystem();
+		ps->init();
+
+		Texture* particleTex = new Texture("./textures/magic_spark.png");
+
+		int magicParticlesNum = 20;
+		int radius = 2.0f;
+
+		for (int i = 0; i < magicParticlesNum; i++) {
+			particle = new Particle(particleTex);
+
+			float offsetX = randomRange(-radius, radius);
+			float offsetY = randomRange(0.0f, radius);
+			float offsetZ = randomRange(-radius, radius);
+
+
+			float x = orb->getTransform().getPosition().x + offsetX;
+			float y = orb->getTransform().getPosition().y + 2.0f + offsetY;
+			float z = orb->getTransform().getPosition().z + offsetZ;
+
+			particle->initXYZ(x, y, z);
+			ps->addParticle(particle);
+		}
 
 		// Initialise values for deltaTime & FPS counter
 		lastTicks = SDL_GetTicks();
@@ -386,6 +411,9 @@ namespace GE {
 			hedgehog->getTransform().setPosition(hedgehogPos.x + 0.02f, hedgehogPos.y, hedgehogPos.z);
 		}
 		hedgehog->getTransform().setRotation(hedgehogRot.x, hedgehogRot.y + 0.5f, hedgehogRot.z);
+
+		// Update the particle system
+		ps->update(deltaTime);
 	}
 
 	// Draw method that renders the scene
@@ -428,6 +456,9 @@ namespace GE {
 			fontFT->RenderText(text, (w - textWidth) / 2, h - 48, scale, glm::vec3(1.0f));
 		}
 		
+		// Render Particle System
+		ps->draw(cam);
+
 		// --[UI ELEMENTS]--
 		// Crosshair element
 		gui->drawImage(crosshairImg);
@@ -595,6 +626,12 @@ namespace GE {
 			rockIr->destroy();
 			delete rockIr;
 		}
+
+		if (ps != nullptr) {
+			delete ps;
+		}
+
+		delete particle;
 
 		skybox->destroy();
 

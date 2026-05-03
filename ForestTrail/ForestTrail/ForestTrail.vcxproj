@@ -141,6 +141,9 @@
     <ClInclude Include="source\FontRendererFT.h" />
     <ClInclude Include="source\FPSCameraController.h" />
     <ClInclude Include="source\InstanceRenderer.h" />
+    <ClInclude Include="source\MathUtils.h" />
+    <ClInclude Include="source\Particle.h" />
+    <ClInclude Include="source\ParticleSystem.h" />
     <ClInclude Include="source\SkyboxRenderer.h" />
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\GameEngine.h" />
@@ -156,6 +159,7 @@
     <ClCompile Include="source\GUIRenderer.cpp" />
     <ClCompile Include="source\FontRendererFT.cpp" />
     <ClCompile Include="source\InstanceRenderer.cpp" />
+    <ClCompile Include="source\ParticleSystem.cpp" />
     <ClCompile Include="source\SkyboxRenderer.cpp" />
     <ClCompile Include="source\GameEngine.cpp" />
     <ClCompile Include="source\main.cpp" />

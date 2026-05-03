@@ -16,6 +16,8 @@
 #include "FontRendererFT.h"
 #include "InstanceRenderer.h"
 #include "GUIRenderer.h"
+#include "ParticleSystem.h"
+#include "MathUtils.h"
 
 namespace GE {
 	class GameEngine {
@@ -139,6 +141,10 @@ namespace GE {
 		// Vectors used for rendering instances
 		std::vector<InstancePosRotScale> treeInstances;
 		std::vector<InstancePosRotScale> rockInstances;
+
+		// ParticleSystem object variable
+		ParticleSystem* ps;
+		Particle* particle;
 	};
 
 	// Helper function

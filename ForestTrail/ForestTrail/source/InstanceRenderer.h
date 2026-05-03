@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
+#include "MathUtils.h"
 
 namespace GE {
 	// Structure for the instance data
@@ -24,8 +25,6 @@ namespace GE {
 		void drawInstanced(Camera* cam, Model* m);
 
 		void destroy();
-
-		float randomFloat(float min, float max);
 
 		InstancePosRotScale setRandomPos(
 			float minX, float maxX,
