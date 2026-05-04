@@ -74,6 +74,8 @@ namespace GE {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		// Disable the depth writes for alpha-blended particles 
+		// to prevent transparent areas from incorrectly blocking geometry behind them
 		glDepthMask(GL_FALSE);
 
 		// Select the program into the rendering context
@@ -99,10 +101,10 @@ namespace GE {
 
 		for (Particle* p : particles) {
 			// Billboard rotation
-			glm::vec3 pPos(p->getX(), p->getY(), p->getZ());
-			glm::vec3 camPos = cam->getPos();
-			glm::vec3 diff = camPos - pPos;
-			float angle = std::atan2(diff.x, diff.z);
+			glm::vec3 pPos(p->getX(), p->getY(), p->getZ());	// Gets the position of the particle
+			glm::vec3 camPos = cam->getPos();					// Gets the position of the camera
+			glm::vec3 diff = camPos - pPos;						// Works out the differnce between the camera and the particle
+			float angle = std::atan2(diff.x, diff.z);			// Calculates an angle using the difference
 
 			// Scale the whole quad around its origin, rotate the quad to face the camera (angle - see above), and then translate the quad to the new xyz
 			glm::mat4 transformationMat = glm::mat4(1.0f);

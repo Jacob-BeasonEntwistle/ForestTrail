@@ -104,9 +104,13 @@ namespace GE {
 		// Model renderer
 		ModelRenderer* mr = nullptr;
 
-		// Orb (dynamic model) variables
+		// Dynamic models settings
+		// Orb variables
 		float dynamDirection = 1.0f;
 		float dynamSpeed = 1.25f;
+		// Hedgehog variables
+		glm::vec3 hedgehogStart = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 hedgehogEnd = glm::vec3(0.0f, 0.0f, 0.0f);
 
 		// For storing entities
 		std::vector<Entity*> loadedEntities;
@@ -128,6 +132,7 @@ namespace GE {
 		GUIImage* miniMapBackgronudImg = nullptr;
 		GUIImage* miniMapImg = nullptr;
 		GUIImage* playerIconImg = nullptr;
+		GUIImage* sprintingIconImg = nullptr;
 
 		// Define minimap bounds
 		float minimapSize = 128.0f;
@@ -143,8 +148,8 @@ namespace GE {
 		std::vector<InstancePosRotScale> rockInstances;
 
 		// ParticleSystem object variable
-		ParticleSystem* ps;
-		Particle* particle;
+		ParticleSystem* ps = nullptr;
+		Particle* particle = nullptr;
 	};
 
 	// Helper function

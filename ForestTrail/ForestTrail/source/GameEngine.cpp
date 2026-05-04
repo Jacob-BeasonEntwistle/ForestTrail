@@ -154,6 +154,9 @@ namespace GE {
 
 		player->getTransform().setPosition(0.0f, 2.0f, 15.0f);
 
+		hedgehogStart = hedgehog->getTransform().getPosition();
+		hedgehogEnd = hedgehogStart + randomVec3(-10.0f, 10.0f, 0.0f, 0.0f, -10.0f, 10.0f);
+
 		std::string skyboxPath = "./textures/skybox_textures/skybox";
 		skybox = new SkyboxRenderer(skyboxPath + "_front.png", skyboxPath + "_back.png", skyboxPath + "_right.png", skyboxPath + "_left.png", skyboxPath + "_top.png", skyboxPath + "_bottom.png");
 
@@ -179,6 +182,9 @@ namespace GE {
 		miniMapImg = new GUIImage(24, 24, miniMapTex);
 		Texture* playerIconTex = new Texture("./textures/player_icon.png");
 		playerIconImg = new GUIImage(0, 0, playerIconTex);
+
+		Texture* sprintingIconTex = new Texture("./textures/sprinting.png");
+		sprintingIconImg = new GUIImage((w - sprintingIconTex->getWidth() - 24.0f), (h / 2), sprintingIconTex);
 
 		treeIr = new InstanceRenderer();
 		treeIr->init();
@@ -404,13 +410,33 @@ namespace GE {
 		orb->getTransform().setRotation(orbRot.x, orbRot.y + 2.0f, orbRot.z);
 
 		// Hedgehog movement
+		// Get current position
 		glm::vec3 hedgehogPos = hedgehog->getTransform().getPosition();
-		glm::vec3 hedgehogRot = hedgehog->getTransform().getRotation();
+		// Work out where it needs to go - direction from current pos to destination
+		glm::vec3 hedgehogDirection = hedgehogEnd - hedgehogPos;
+		float hedgehogDistance = glm::length(hedgehogDirection);
 
-		if (hedgehogPos.x < 25) {
-			hedgehog->getTransform().setPosition(hedgehogPos.x + 0.02f, hedgehogPos.y, hedgehogPos.z);
+		// If the hedgehog hasn't reached the destination
+		if (hedgehogDistance > 0.01f) {
+			// Normalize the direction
+			hedgehogDirection = glm::normalize(hedgehogDirection);
+
+			// Create an angle to look at the target
+			// Atan2 converts a 2D direction into an angle
+			// x and z points are chosen to move the model on a 2D plane rather than moving it up/down
+			// + 180.0f to flip the direction of "front" for the model
+			float angle = glm::degrees(std::atan2(hedgehogDirection.x, hedgehogDirection.z)) + 180.0f;
+			hedgehog->getTransform().setRotation(0.0f, angle, 0.0f);
+
+			// And move towards the target
+			glm::vec3 newPos = hedgehogPos + hedgehogDirection * 1.0f * deltaTime;
+			hedgehog->getTransform().setPosition(newPos);
 		}
-		hedgehog->getTransform().setRotation(hedgehogRot.x, hedgehogRot.y + 0.5f, hedgehogRot.z);
+		else {
+			// Once the destination is reached, find a new random destination to head to
+			hedgehogStart = hedgehogEnd;
+			hedgehogEnd = hedgehogStart + randomVec3(-10.0f, 10.0f, 0, 0, -10.0f, 10.0f);
+		}
 
 		// Update the particle system
 		ps->update(deltaTime);
@@ -465,6 +491,10 @@ namespace GE {
 		gui->drawImage(miniMapBackgronudImg);
 		gui->drawImage(miniMapImg);
 		gui->drawImage(playerIconImg);
+
+		if (isSprinting) {
+			gui->drawImage(sprintingIconImg);
+		}
 		
 		// Show game statistics
 		if (showStats) {
@@ -616,6 +646,7 @@ namespace GE {
 		delete miniMapBackgronudImg;
 		delete miniMapImg;
 		delete playerIconImg;
+		delete sprintingIconImg;
 
 		if (treeIr != nullptr) {
 			treeIr->destroy();

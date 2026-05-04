@@ -3,7 +3,9 @@
 Created by Jacob Beason Entwistle for Game Engine Architecture (CMP5363)
 
 ## Overview
-The game scene will be a forest that encourages exploration and presents the player with points of interest (POI's) throughout the scene.
+The game scene is be a forest that encourages exploration and presents the player with points of interest (POI's) throughout the scene.
+
+The forest layout is randomised each time the scene is run, scattering rocks and trees across the map. A GUI helps to guide the player and a custom cursor shows the player the direction they are facing. 
 
 ## Current Features
 ### 40%
@@ -17,9 +19,8 @@ The game scene will be a forest that encourages exploration and presents the pla
 
 ### 50-59%
 - Third person camera (+ switching between povs)
-- Dynamic models (rotating statue and hedgehog)
+- Dynamic models (rotating statue and walking hedgehog)
 - FPS text (UI)
-- Billboard objects (rendered particle textures)
 
 ### 60-69%
 - Instancing (trees, rocks)
@@ -28,7 +29,7 @@ The game scene will be a forest that encourages exploration and presents the pla
 
 ### 70%+
 - Lighting
-- Special effects (particles - fire, leaves falling, embers, magic glow)
+- Special effects (particle system - magic glow around orb)
 
 ## Future Features
 ### 70%+
@@ -49,13 +50,14 @@ The game scene will be a forest that encourages exploration and presents the pla
 ## How to Play
 - WASD to move around
 - Mouse to look around
+- Left Shift to sprint
 - TAB to toggle camera mode
 - F1 to open debug stats
 
 ---
 
 ## Code Profiling
-### <u>[08/04/2026]</u> - After adding particle system
+### <u>[03/05/2026]</u> - After adding particle system
 - **FPS**: ~41FPS (home machine)
 - **ge.init()**: ~869.6ms average
 - **ge.update()**: ~0.162ms average
@@ -131,4 +133,5 @@ Draw function is the bottleneck - limits performance. Requires some optimisation
 6. [DONE] Playing the game - how to run the game and key bindings
 7. [DONE] Code profiling results on Windows and Linux
 8. [DONE] Optimisations applied
-9. References to sources used.  This must include graphics resources used such as models and textures, and code resources (websites, book, AI).
+9. Port latest version to Linux
+10. References to sources used.  This must include graphics resources used such as models and textures, and code resources (websites, book, AI).
