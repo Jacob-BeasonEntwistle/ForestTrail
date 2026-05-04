@@ -73,7 +73,7 @@ Performance could be improved by using batch rendering to draw the particles in 
 
 Batch rendering the particles would reduce the number of draw calls and lower the CPU load
 
-### <u>[08/04/2026]</u> - After optimising drawing UI stats
+### <u>[09/04/2026]</u> - After optimising drawing UI stats
 - **FPS**: ~42 FPS (home machine)
 - **ge.init()**: ~881.6ms average
 - **ge.update()**: ~0.192ms average
