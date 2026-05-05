@@ -57,6 +57,18 @@ The forest layout is randomised each time the scene is run, scattering rocks and
 ---
 
 ## Code Profiling
+### <u>[05/05/2026]</u> - Final Linux Port
+- **FPS**: ~61FPS (uni machine)
+- **ge.init()**: ~ms average
+- **ge.update()**: ~ms average
+- **ge.draw()**: ~ms average
+
+|Function	|Run 1	|Run 2	|Run 3	|Run 4	|Run 5	|Average|
+|---		|---	|---	|---	|---	|---	|---	|
+|ge.init()	|530ms	|549ms	|518ms	|532ms	|539ms	|533.6ms|
+|ge.update()|2.39ms	|1.86ms	|1.61ms	|1.93ms	|2.26ms	|2.01ms |
+|ge.draw()	|10.23ms|13.17ms|10.01ms|13.28ms|9.88ms |11.31ms|
+
 ### <u>[03/05/2026]</u> - After adding particle system
 - **FPS**: ~41FPS (home machine)
 - **ge.init()**: ~869.6ms average

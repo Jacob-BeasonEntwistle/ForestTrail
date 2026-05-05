@@ -86,17 +86,28 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add directory="include" />
+		</Compiler>
 		<Unit filename="source/Camera.h" />
 		<Unit filename="source/Entity.h" />
 		<Unit filename="source/FPSCameraController.h" />
 		<Unit filename="source/FontRendererFT.cpp" />
 		<Unit filename="source/FontRendererFT.h" />
+		<Unit filename="source/GUIRenderer.cpp" />
+		<Unit filename="source/GUIRenderer.h" />
 		<Unit filename="source/GameEngine.cpp" />
 		<Unit filename="source/GameEngine.h" />
+		<Unit filename="source/InstanceRenderer.cpp" />
+		<Unit filename="source/InstanceRenderer.h" />
+		<Unit filename="source/MathUtils.h" />
 		<Unit filename="source/Model.cpp" />
 		<Unit filename="source/Model.h" />
 		<Unit filename="source/ModelRenderer.cpp" />
 		<Unit filename="source/ModelRenderer.h" />
+		<Unit filename="source/Particle.h" />
+		<Unit filename="source/ParticleSystem.cpp" />
+		<Unit filename="source/ParticleSystem.h" />
 		<Unit filename="source/ShaderUtils.cpp" />
 		<Unit filename="source/ShaderUtils.h" />
 		<Unit filename="source/SkyboxRenderer.cpp" />
