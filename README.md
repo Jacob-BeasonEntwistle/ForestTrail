@@ -2,6 +2,8 @@
 
 *Developed by Jacob Beason Entwistle as part of a Game Engine Architecture module.*
 
+![A screenshot of the scene showing a few trees, a rock, a sign, a magical orb, and a minimap in the top left](ForestTrail/ForestTrail/ForestTrail.png)
+
 ## Overview
 Forest Trail is a custom-built 3D scene rendered using a C++ OpenGL-based engine. The environment features a procedurally generated forest designed around exploration, with dynamic points of interest distributed throughout the world. Each run produces a slightly different layout through randomised object placement.
 
